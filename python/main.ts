@@ -1,15 +1,5 @@
-
 //% color="#458EF7" iconWidth=50 iconHeight=40
 namespace robot {
-    /*    
-        //% block="import libraries" blockType="command"
-        export function importLibraries(parameter: any, block: any) {
-            Generator.addImport(`import binascii`);
-            Generator.addImport(`import serial`);
-            Generator.addImport(`import time`);
-            Generator.addImport(`from PetoiRobot import *`);
-        }
-    */
 
     //% block="Train decision tree with [PATH] where target name is [TARGET]" blockType="reporter"
     //% PATH.shadow="string" PATH.defl="data.csv"
