@@ -1,40 +1,45 @@
 
-//% color="#da43ad" iconWidth=50 iconHeight=40
-namespace robot{
-/*    
-    //% block="import libraries" blockType="command"
-    export function importLibraries(parameter: any, block: any) {
-        Generator.addImport(`import binascii`);
-        Generator.addImport(`import serial`);
-		Generator.addImport(`import time`);
-        Generator.addImport(`from PetoiRobot import *`);
+//% color="#458EF7" iconWidth=50 iconHeight=40
+namespace robot {
+    /*    
+        //% block="import libraries" blockType="command"
+        export function importLibraries(parameter: any, block: any) {
+            Generator.addImport(`import binascii`);
+            Generator.addImport(`import serial`);
+            Generator.addImport(`import time`);
+            Generator.addImport(`from PetoiRobot import *`);
+        }
+    */
+
+    //% block="Train decision tree with [PATH] where target name is [TARGET]" blockType="reporter"
+    //% PATH.shadow="string" PATH.defl="data.csv"
+    //% TARGET.shadow="string" TARGET.defl="target"
+    export function train_decision_tree(parameter: any, block: any) {
+        let data_path = parameter.PATH.code
+        let target = parameter.TARGET.code
+        Generator.addImport(`from learn import train_decision_tree`);
+        Generator.addCode(`train_decision_tree(${data_path}, ${target})`);
     }
-*/
 
-    //% block="Read sensor data from [SENSORS] for [TIME] seconds" blockType="reporter"
-    //% SENSORS.shadow="list" SENSORS.defl="'pir', 'light'"
-    //% TIME.shadow="number" TIME.defl=10
-    export function read_sensors(parameter: any, block: any) {
-        let sensors = parameter.SENSORS.code
-        let read_time = parameter.TIME.code
-        Generator.addImport(`from sensors import *`);
-		Generator.addCode(`read_sensors(${sensors}, ${read_time})`);
-    }
-
-    //% block="Save sensor data [DATA] locally to [PATH]" blockType="command"
-    //% DATA.shadow="normal"
-    //% PATH.shadow="string" PATH.defl="test"
-    export function save_sensor_data(parameter: any, block: any) {
-        let data = parameter.DATA.code
-        let save_name = parameter.PATH.code
-
-        Generator.addCode(`# This block saves the sensor data to the following directories:`)
-        Generator.addCode(`# Windows: C:\\Users\\{your user name}\\sensor_data`)
-        Generator.addCode(`# MacOS: /Users/{your user name}/sensor_data`)
-        Generator.addCode(`# Linux: /home/{your user name}/sensor_data`)
-        Generator.addCode(`# Please enter the filename in the block`)
-        Generator.addCode(`save_sensor_data(${data}, ${save_name})`)
+    //% block="Train neural network with [PATH] where target name is [TARGET]" blockType="reporter"
+    //% PATH.shadow="string" PATH.defl="data.csv"
+    //% TARGET.shadow="string" TARGET.defl="target"
+    export function train_neural_network(parameter: any, block: any) {
+        let data_path = parameter.PATH.code
+        let target = parameter.TARGET.code
+        Generator.addImport(`from learn import train_neural_network`);
+        Generator.addCode(`train_neural_network(${data_path}, ${target})`);
 
     }
-	
+
+    //% block="Infer label with [MODEL] from condition [CONDITION]" blockType="command"
+    //% MODEL.shadow="normal"
+    //% CONDITION.shadow="list" PATH.defl="['timestamp', 'pir', 'touch', 'light', 'ir']"
+    export function infer(parameter: any, block: any) {
+        let model = parameter.MODEL.code
+        let condition = parameter.CONDITION.code
+        Generator.addImport(`from learn import infer`);
+        Generator.addCode(`infer(${model}, ${condition})`);
+    }
+
 }
