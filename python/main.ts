@@ -5,8 +5,8 @@ namespace robot {
     //% PATH.shadow="string" PATH.defl="data.csv"
     //% TARGET.shadow="string" TARGET.defl="target"
     export function train_decision_tree(parameter: any, block: any) {
-        let data_path = parameter.PATH.code
-        let target = parameter.TARGET.code
+        let data_path = parameter.PATH.code;
+        let target = parameter.TARGET.code;
         Generator.addImport(`from learn import train_decision_tree`);
         Generator.addCode(`train_decision_tree(${data_path}, ${target})`);
     }
@@ -15,19 +15,18 @@ namespace robot {
     //% PATH.shadow="string" PATH.defl="data.csv"
     //% TARGET.shadow="string" TARGET.defl="target"
     export function train_neural_network(parameter: any, block: any) {
-        let data_path = parameter.PATH.code
-        let target = parameter.TARGET.code
+        let data_path = parameter.PATH.code;
+        let target = parameter.TARGET.code;
         Generator.addImport(`from learn import train_neural_network`);
         Generator.addCode(`train_neural_network(${data_path}, ${target})`);
-
     }
 
     //% block="Infer label with [MODEL] from condition [CONDITION]" blockType="command"
     //% MODEL.shadow="normal" MODEL.defl="'trained model'"
     //% CONDITION.shadow="list" CONDITION.defl="'timestamp', 'pir', 'touch', 'light', 'ir'"
     export function infer(parameter: any, block: any) {
-        let model = parameter.MODEL.code
-        let condition = parameter.CONDITION.code
+        let model = parameter.MODEL.code;
+        let condition = parameter.CONDITION.code;
         Generator.addImport(`from learn import infer`);
         Generator.addCode(`infer(${model}, ${condition})`);
     }
