@@ -1,46 +1,121 @@
-import sklearn
 import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
 
 
-def train_decision_tree(path, target):
-    # Load the data
+def train_decision_tree(path: str, target: str) -> DecisionTreeClassifier:
+    """
+    Train a decision tree model on the data at the given path.
+
+    Parameters:
+    path (str): The file path to the CSV data.
+    target (str): The name of the target column in the data.
+
+    Returns:
+    DecisionTreeClassifier: The trained decision tree model.
+    """
+    # Controllo sui parametri
+    if not isinstance(path, str):
+        raise ValueError("Il parametro 'path' deve essere una stringa.")
+    if not isinstance(target, str):
+        raise ValueError("Il parametro 'target' deve essere una stringa.")
+
+    print(f"Path del file: {path}")
+    print(f"Colonna target: {target}")
+
+    # Carica i dati
     data = pd.read_csv(path)
+    print("Dati caricati con successo.")
 
-    # Split the data into features and target
+    # Controllo se il target esiste nei dati
+    if target not in data.columns:
+        raise ValueError(f"La colonna target '{target}' non esiste nei dati.")
+    print(f"Colonna target '{target}' trovata nei dati.")
+
+    # Dividi i dati in caratteristiche (features) e target
     X = data.drop(target, axis=1)
     y = data[target]
+    print("Dati divisi in caratteristiche (features) e target.")
 
-    # Train a decision tree model
-    model = sklearn.tree.DecisionTreeClassifier()
+    # Addestramento del modello ad albero decisionale
+    model = DecisionTreeClassifier()
     model.fit(X, y)
+    print("Modello ad albero decisionale addestrato con successo.")
 
     return model
 
 
-def train_neural_network(path, target):
-    # Load the data
-    data = pd.read_csv(path)
+def train_neural_network(path: str, target: str, hidden_layer_sizes=(100,), max_iter=200) -> MLPClassifier:
+    """
+    Train a neural network model on the data at the given path using MLPClassifier.
 
-    # Split the data into features and target
+    Parameters:
+    path (str): The file path to the CSV data.
+    target (str): The name of the target column in the data.
+    hidden_layer_sizes (tuple): The ith element represents the number of neurons in the ith hidden layer.
+    max_iter (int): Maximum number of iterations.
+
+    Returns:
+    MLPClassifier: The trained neural network model.
+    """
+    # Controllo sui parametri
+    if not isinstance(path, str):
+        raise ValueError("Il parametro 'path' deve essere una stringa.")
+    if not isinstance(target, str):
+        raise ValueError("Il parametro 'target' deve essere una stringa.")
+    if not isinstance(hidden_layer_sizes, tuple):
+        raise ValueError(
+            "Il parametro 'hidden_layer_sizes' deve essere una tupla.")
+    if not isinstance(max_iter, int) or max_iter <= 0:
+        raise ValueError(
+            "Il parametro 'max_iter' deve essere un intero positivo.")
+
+    print(f"Path del file: {path}")
+    print(f"Colonna target: {target}")
+    print(f"Dimensioni dei layer nascosti: {hidden_layer_sizes}")
+    print(f"Numero massimo di iterazioni: {max_iter}")
+
+    # Carica i dati
+    data = pd.read_csv(path)
+    print("Dati caricati con successo.")
+
+    # Controllo se il target esiste nei dati
+    if target not in data.columns:
+        raise ValueError(f"La colonna target '{target}' non esiste nei dati.")
+    print(f"Colonna target '{target}' trovata nei dati.")
+
+    # Dividi i dati in caratteristiche (features) e target
     X = data.drop(target, axis=1)
     y = data[target]
+    print("Dati divisi in caratteristiche (features) e target.")
 
-    # Train a neural network model
-    model = sklearn.neural_network.MLPClassifier()
+    # Addestramento del modello di rete neurale
+    model = MLPClassifier(
+        hidden_layer_sizes=hidden_layer_sizes, max_iter=max_iter)
     model.fit(X, y)
+    print("Modello di rete neurale addestrato con successo.")
 
     return model
 
 
-def infer(model, data):
-    # Make predictions using the model
-    predictions = model.predict(data)
+def infer(model, data: list) -> str:
+    """
+    Make predictions using the trained model on the given data.
 
-    # prediction is a single label
-    if len(predictions.shape) == 1:
-        predictions = pd.DataFrame(predictions, columns=['prediction'])
-    else:
-        predictions = pd.DataFrame(predictions, columns=[
-                                   'prediction_{}'.format(i) for i in range(predictions.shape[1])])
+    Parameters:
+    model: The trained model to use for prediction.
+    data (list): The data to make predictions on.
 
-    return predictions
+    Returns:
+    str: The predicted class label.
+    """
+
+    # Controllo sui parametri
+    if not isinstance(data, list):
+        raise ValueError("Il parametro 'data' deve essere una lista.")
+
+    # Predizione
+    prediction = model.predict([data])[0]
+    print(f"Predizione effettuata: {prediction}")
+
+    return prediction
