@@ -23,8 +23,8 @@ namespace robot {
     }
 
     //% block="Infer label with [MODEL] from condition [CONDITION]" blockType="command"
-    //% MODEL.shadow="normal"
-    //% CONDITION.shadow="list" PATH.defl="['timestamp', 'pir', 'touch', 'light', 'ir']"
+    //% MODEL.shadow="normal" MODEL.defl="'trained model'"
+    //% CONDITION.shadow="list" CONDITION.defl="'timestamp', 'pir', 'touch', 'light', 'ir'"
     export function infer(parameter: any, block: any) {
         let model = parameter.MODEL.code
         let condition = parameter.CONDITION.code
