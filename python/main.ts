@@ -2,7 +2,7 @@
 namespace robot {
 
     //% block="Train decision tree from [FILENAME] where target name is [LABEL]" blockType="reporter"
-    //% FILENAME.shadow="string" FILENAME.defl="data"
+    //% FILENAME.shadow="string" FILENAME.defl="test"
     //% LABEL.shadow="string" LABEL.defl="label"
     export function train_decision_tree(parameter: any, block: any) {
         // Initiating the variables as strings removing trailing and leading spaces
