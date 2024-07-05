@@ -1,8 +1,7 @@
+from sklearn import tree, neural_network
+
 from typing import List, Tuple
 from PetoiRobot import *
-
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neural_network import MLPClassifier
 
 from datetime import datetime
 
@@ -128,7 +127,7 @@ def train_decision_tree(filename: str):
     print("Dati convertiti.")
 
     # Addestramento del modello di albero decisionale
-    model = DecisionTreeClassifier(random_state=42)
+    model = tree.DecisionTreeClassifier(random_state=42)
     model.fit(X, y)
     print("Modello di albero decisionale addestrato con successo.")
 
@@ -170,7 +169,7 @@ def train_neural_network(filename: str, hidden_layer_sizes=(100,), max_iter=200)
     print("Dati convertiti.")
 
     # Addestramento del modello di rete neurale
-    model = MLPClassifier(
+    model = neural_network.MLPClassifier(
         hidden_layer_sizes=hidden_layer_sizes, max_iter=max_iter, random_state=42)
     model.fit(X, y)
     print("Modello di rete neurale addestrato con successo.")
