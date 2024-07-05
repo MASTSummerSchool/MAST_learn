@@ -211,7 +211,7 @@ def infer(model, data: list) -> str:
 def main():
     # Addestramento del modello di rete neurale
     model = train_decision_tree("test")
-    # model = train_neural_network("test")
+    model = train_neural_network("test")
     _ = infer(model, ["2021-06-01 00:00:00.000", 1, -1, 2, 105, 110, -1, 0])
 
 
