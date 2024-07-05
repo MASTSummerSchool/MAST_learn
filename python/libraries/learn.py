@@ -1,8 +1,4 @@
-import time
-import csv
 from PetoiRobot import *
-from datetime import datetime
-import platform
 
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
@@ -30,6 +26,7 @@ def train_decision_tree(path: str, target: str) -> DecisionTreeClassifier:
     print(f"Colonna target: {target}")
 
     # Carica i dati
+    # Il path deve essere composto 
     data = pd.read_csv(path)
     print("Dati caricati con successo.")
 

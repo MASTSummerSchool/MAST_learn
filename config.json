@@ -5,7 +5,7 @@
     "description": {
       "en": "Enable machine learning algorithms for the Petoi Coding Blocks of the Bittle"
     },
-    "author": "Stefano P. Zingaro",
+    "author": "Stefano Zingaro",
     "email": "stefano.zingaro@unibo.it",
     "license": "MIT",
     "isBoard": false,
@@ -21,7 +21,8 @@
               "numpy": "1.24.4",
               "pandas": "2.0.3",
               "scipy": "1.5.4",
-              "scikit-learn": "0.24.1"
+              "scikit-learn": "0.24.1",
+              "matplotlib": "3.7.5"
           }
         }
      }
