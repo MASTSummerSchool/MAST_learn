@@ -27,7 +27,7 @@ namespace robot {
     }
 
     //% block="Train neural network with [FILENAME] where target name is [LABEL]" blockType="reporter"
-    //% FILENAME.shadow="string" FILENAME.defl="data"
+    //% FILENAME.shadow="string" FILENAME.defl="test"
     //% LABEL.shadow="string" LABEL.defl="label"
     export function train_neural_network(parameter: any, block: any) {
         let filename = parameter.FILENAME.code;
