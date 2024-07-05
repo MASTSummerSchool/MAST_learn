@@ -1,32 +1,36 @@
 from PetoiRobot import *
 
 import pandas as pd
+
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 
 
-def train_decision_tree(path: str, target: str) -> DecisionTreeClassifier:
+def train_decision_tree(filename: str, target: str) -> DecisionTreeClassifier:
     """
     Train a decision tree model on the data at the given path.
 
     Parameters:
-    path (str): The file path to the CSV data.
+    filename (str): The file path to the CSV data.
     target (str): The name of the target column in the data.
 
     Returns:
     DecisionTreeClassifier: The trained decision tree model.
     """
     # Controllo sui parametri
-    if not isinstance(path, str):
-        raise ValueError("Il parametro 'path' deve essere una stringa.")
+    if not isinstance(filename, str):
+        raise ValueError("Il parametro 'filename' deve essere una stringa.")
     if not isinstance(target, str):
         raise ValueError("Il parametro 'target' deve essere una stringa.")
 
-    print(f"Path del file: {path}")
+    print(f"Nome del file: {filename}")
     print(f"Colonna target: {target}")
 
     # Carica i dati
-    # Il path deve essere composto 
+    # Il path deve essere composto dalla cartella sensor data nella home dell'utente (dipende dal sistema operativo) e il nome del file
+    HOME = os.path.expanduser("~")
+    path = f"{HOME}/sensor_data/{filename}"
+    print(f"Path del file: {path}")
     data = pd.read_csv(path)
     print("Dati caricati con successo.")
 
@@ -48,12 +52,12 @@ def train_decision_tree(path: str, target: str) -> DecisionTreeClassifier:
     return model
 
 
-def train_neural_network(path: str, target: str, hidden_layer_sizes=(100,), max_iter=200) -> MLPClassifier:
+def train_neural_network(filename: str, target: str, hidden_layer_sizes=(100,), max_iter=200) -> MLPClassifier:
     """
     Train a neural network model on the data at the given path using MLPClassifier.
 
     Parameters:
-    path (str): The file path to the CSV data.
+    filename (str): The file path to the CSV data.
     target (str): The name of the target column in the data.
     hidden_layer_sizes (tuple): The ith element represents the number of neurons in the ith hidden layer.
     max_iter (int): Maximum number of iterations.
@@ -62,8 +66,8 @@ def train_neural_network(path: str, target: str, hidden_layer_sizes=(100,), max_
     MLPClassifier: The trained neural network model.
     """
     # Controllo sui parametri
-    if not isinstance(path, str):
-        raise ValueError("Il parametro 'path' deve essere una stringa.")
+    if not isinstance(filename, str):
+        raise ValueError("Il parametro 'filename' deve essere una stringa.")
     if not isinstance(target, str):
         raise ValueError("Il parametro 'target' deve essere una stringa.")
     if not isinstance(hidden_layer_sizes, tuple):
@@ -73,12 +77,16 @@ def train_neural_network(path: str, target: str, hidden_layer_sizes=(100,), max_
         raise ValueError(
             "Il parametro 'max_iter' deve essere un intero positivo.")
 
-    print(f"Path del file: {path}")
+    print(f"Nome del file: {filename}")
     print(f"Colonna target: {target}")
     print(f"Dimensioni dei layer nascosti: {hidden_layer_sizes}")
     print(f"Numero massimo di iterazioni: {max_iter}")
 
     # Carica i dati
+    # Il path deve essere composto dalla cartella sensor data nella home dell'utente (dipende dal sistema operativo) e il nome del file
+    HOME = os.path.expanduser("~")
+    path = f"{HOME}/sensor_data/{filename}"
+    print(f"Path del file: {path}")
     data = pd.read_csv(path)
     print("Dati caricati con successo.")
 

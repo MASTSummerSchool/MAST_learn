@@ -1,34 +1,39 @@
-//% color="#458EF7" iconWidth=50 iconHeight=40
+//% color="#F7AD45" iconWidth=50 iconHeight=40
 namespace robot {
 
-    //% block="Train decision tree with [PATH] where target name is [TARGET]" blockType="reporter"
-    //% PATH.shadow="string" PATH.defl="data"
+    //% block="Train decision tree from [FILENAME] where target name is [TARGET]" blockType="reporter"
+    //% FILENAME.shadow="string" FILENAME.defl="data"
     //% TARGET.shadow="string" TARGET.defl="target"
     export function train_decision_tree(parameter: any, block: any) {
-        let path = JSON.stringify(parameter.PATH.code);
-        let target = JSON.stringify(parameter.TARGET.code);
+        // Initiating the variables as strings removing trailing and leading spaces
+        let filename = parameter.FILENAME.code;
+        let target = parameter.TARGET.code;
+
+        // Add import statement
         Generator.addImport(`from learn import train_decision_tree`);
-        Generator.addCode(`train_decision_tree(${path}, ${target})`);
-        Generator.addCode(`# Questo blocco CARICA i dati del sensore DAI seguenti directory:`)
-        Generator.addCode(`# Windows: C:\\Users\\{il tuo nome utente}\\sensor_data`)
-        Generator.addCode(`# MacOS: /Users/{il tuo nome utente}/sensor_data`)
-        Generator.addCode(`# Linux: /home/{il tuo nome utente}/sensor_data`)
-        Generator.addCode(`# Inserire SOLO il nome del file nel blocco (es. data)`)
+
+        // Add the actual code for the training
+        Generator.addCode(`train_decision_tree(${filename}, ${target})`);
+
+        // Add comments OS dependant
+        Generator.addCode(`# This block LOAD the sensor data FROM:`)
+        Generator.addCode(`# Windows: C:\\Users\\{your user name}\\sensor_data`)
+        Generator.addCode(`# MacOS: /Users/{your user name}/sensor_data`)
+        Generator.addCode(`# Linux: /home/{your user name}/sensor_data`)
+        Generator.addCode(`# Please enter ONLY the filename in the block (e.g. data)`)
+
+        // return the code
+        return null;
     }
 
     //% block="Train neural network with [PATH] where target name is [TARGET]" blockType="reporter"
     //% PATH.shadow="string" PATH.defl="data"
     //% TARGET.shadow="string" TARGET.defl="target"
     export function train_neural_network(parameter: any, block: any) {
-        let path = JSON.stringify(parameter.PATH.code);
-        let target = JSON.stringify(parameter.TARGET.code);
+        let data_path = parameter.PATH.code;
+        let target = parameter.TARGET.code;
         Generator.addImport(`from learn import train_neural_network`);
-        Generator.addCode(`train_neural_network(${path}, ${target})`);
-        Generator.addCode(`# Questo blocco CARICA i dati del sensore DAI seguenti directory:`)
-        Generator.addCode(`# Windows: C:\\Users\\{il tuo nome utente}\\sensor_data`)
-        Generator.addCode(`# MacOS: /Users/{il tuo nome utente}/sensor_data`)
-        Generator.addCode(`# Linux: /home/{il tuo nome utente}/sensor_data`)
-        Generator.addCode(`# Inserire SOLO il nome del file nel blocco (es. data)`)
+        Generator.addCode(`train_neural_network(${data_path}, ${target})`);
     }
 
     //% block="Infer label with [MODEL] from condition [CONDITION]" blockType="command"

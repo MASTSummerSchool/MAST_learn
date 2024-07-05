@@ -1,28 +1,31 @@
 {
-    "name": {
-      "en": "Learn Module @MAST"
-    },
-    "description": {
-      "en": "Enable machine learning algorithms for the Petoi Coding Blocks of the Bittle"
-    },
-    "author": "Stefano Zingaro",
-    "email": "stefano.zingaro@unibo.it",
-    "license": "MIT",
-    "isBoard": false,
-    "id": "learn",
-    "platform": ["win","mac","web","linux"],
-    "version": "0.1.1",
-    "asset": {
-      "python": {
-          "dir": "python/",
-          "main": "main.ts",
-          "dependencies": {
-              "numpy": "1.24.4",
-              "pandas": "2.0.3",
-              "scipy": "1.5.4",
-              "scikit-learn": "0.24.1",
-              "matplotlib": "3.7.5"
-          }
-        }
-     }
+  "name": {
+    "en": "Learn Module @MAST"
+  },
+  "description": {
+    "en": "Enable machine learning algorithms for the Petoi Coding Blocks of the Bittle"
+  },
+  "author": "Stefano Zingaro",
+  "email": "stefano.zingaro@unibo.it",
+  "license": "MIT",
+  "isBoard": false,
+  "id": "learn",
+  "platform": [
+    "win",
+    "mac",
+    "web",
+    "linux"
+  ],
+  "version": "0.1.1",
+  "asset": {
+    "python": {
+      "dir": "python/",
+      "main": "main.ts",
+      "dependencies": {
+        "pandas": "2.0.3",
+        "scikit-learn": "0.24.1",
+        "matplotlib": "3.7.5"
+      }
+    }
   }
+}
