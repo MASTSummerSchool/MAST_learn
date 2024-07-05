@@ -1,2 +1,40 @@
+# Python
+*.pyc
+__pycache__/
 
+# Windows
+Thumbs.db
+Desktop.ini
+
+# IDEs and Editors
+.vscode/
+.idea/
+
+# Compiled files
+*.exe
+*.dll
+*.so
+*.pyd
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# Virtual environments
+venv/
+env/
+.env/
+
+# Package files
+*.egg-info/
+dist/
+build/
+
+# Miscellaneous
+*.swp
+*.bak
+*.tmp
+
+# macOS
 .DS_Store
