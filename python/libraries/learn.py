@@ -144,6 +144,7 @@ def train_decision_tree(filename: str):
 
     # Carica i dati
     _, data = load_data(path)
+    print(data)
     print("Dati caricati con successo.")
 
     # Preprocessamento dei dati
@@ -223,7 +224,8 @@ def infer(model, data: list) -> str:
     # Pre-processa i dati
     # data contiene un unico valore, un dizionario in prima posizione
     header = data[0].keys() # le chiavi sono i nomi delle colonne
-    values = data[0].values() # i valori sono i dati dei sensori 
+    values = list(data[0].values()) # i valori sono i dati dei sensori 
+    print(values)
     X, _ = preprocess_data(values) # preprocessiamo i dati dei sensori
     print(f"Inferenza sul dato: {X}")
 
@@ -238,9 +240,8 @@ def main():
     # Addestramento del modello di rete neurale
     model = train_decision_tree("test")
     #model = train_neural_network("test")
-    label = infer(model, [
-        {
-            'timestamp': '2021-06-01 00:00:00.000', 
+    label = infer(model, [{
+            'timestamp': '2021-06-01 17:10:01.344', 
             'pir': 1, 
             'touch_right': -1, 
             'touch_left': 2, 
