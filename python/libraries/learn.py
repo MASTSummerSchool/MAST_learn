@@ -5,8 +5,11 @@ from PetoiRobot import *
 
 from datetime import datetime
 
+import os
+import platform
 
-def compose_path(filename: str) -> str:
+
+def compose_path(filename: str, file_ext: str = '.csv') -> str:
     """
     Compose the path to the CSV data file.
 
@@ -21,10 +24,30 @@ def compose_path(filename: str) -> str:
         raise ValueError("Il parametro 'filename' deve essere una stringa.")
 
     # Il path deve essere composto dalla cartella sensor data nella home dell'utente (dipende dal sistema operativo) e il nome del file
-    HOME = os.path.expanduser("~")
-    ext = "" if filename.endswith(".csv") else ".csv"
-    path = f"{HOME}/sensor_data/{filename}{ext}"
-    return path
+    # Check if we are on windows, mac or linux:
+    if platform.system() == "Windows":
+        sep = '\\'
+        home_dir = os.getenv('HOMEDRIVE')
+        home_path = os.getenv('HomePath')
+        config_dir = home_dir + home_path
+    else:  # for Linux & macOS
+        sep = '/'
+        home = os.getenv('HOME')
+        config_dir = home
+
+    # Create the data directory:
+    data_dir = config_dir + sep + 'sensor_data'
+
+    # Check if it exists:
+    if not os.path.exists(data_dir):
+
+        # Create the directory if it does not exist
+        os.makedirs(data_dir)
+
+    # Check if the file name already exists and if yes make it unique:
+    file_dir = data_dir + sep + filename + file_ext
+
+    return file_dir
 
 
 def load_data(path: str) -> Tuple[List[str], List[List[str]]]:
@@ -125,6 +148,7 @@ def train_decision_tree(filename: str):
     # Preprocessamento dei dati
     X, y = preprocess_data(data)
     print("Dati convertiti.")
+    print(X)
 
     # Addestramento del modello di albero decisionale
     model = tree.DecisionTreeClassifier(random_state=42)
@@ -167,6 +191,7 @@ def train_neural_network(filename: str, hidden_layer_sizes=(100,), max_iter=200)
     # Pre-processa i dati
     X, y = preprocess_data(data)
     print("Dati convertiti.")
+    print(X)
 
     # Addestramento del modello di rete neurale
     model = neural_network.MLPClassifier(
@@ -210,7 +235,7 @@ def infer(model, data: list) -> str:
 def main():
     # Addestramento del modello di rete neurale
     model = train_decision_tree("test")
-    model = train_neural_network("test")
+    #model = train_neural_network("test")
     _ = infer(model, ["2021-06-01 00:00:00.000", 1, -1, 2, 105, 110, -1, 0])
 
 
