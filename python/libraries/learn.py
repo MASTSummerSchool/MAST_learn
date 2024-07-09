@@ -113,7 +113,6 @@ def preprocess_data(data: List[List[str]]) -> Tuple[List[List[float]], List[str]
         # create a list of features and append to X
         # timestamp: datetime to int seconds the first value
         seconds = datetime_to_seconds(row[0])
-        print(seconds)
         X_tmp.append(float(seconds))  # Convert to float
         # pir,touch_left,touch_right,light_left,light_right,ir_left,ir_right: int values
         for j in range(1, 8):
@@ -218,19 +217,20 @@ def infer(model, data: list) -> str:
     # Controllo sui parametri
     if not isinstance(data, list):
         raise ValueError("Il parametro 'data' deve essere una lista.")
+        if not isinstance(data[0], dict):
+            raise ValueError("Il primo valore di 'data' deve essere un dizionario.")
 
-    # Pre-processa i dati che arrivano in questa forma timestamp, pir,touch_left,touch_right,light_left,light_right,ir_left,ir_right
-    X = []
-    # timestamp: datetime to int seconds the first value
-    X.append(float(datetime_to_seconds(data[0])))  # Convert to float
-    # pir,touch_left,touch_right,light_left,light_right,ir_left,ir_right: int values
-    for j in range(1, 8):
-        X.append(float(data[j]))  # Convert to float
+    # Pre-processa i dati
+    # data contiene un unico valore, un dizionario in prima posizione
+    header = data[0].keys() # le chiavi sono i nomi delle colonne
+    values = data[0].values() # i valori sono i dati dei sensori 
+    X, _ = preprocess_data(values) # preprocessiamo i dati dei sensori
     print(f"Inferenza sul dato: {X}")
 
     # Inferenza
     label = model.predict([X])
     print(f"Label: {label}")
+
     return label
 
 
@@ -238,7 +238,19 @@ def main():
     # Addestramento del modello di rete neurale
     model = train_decision_tree("test")
     #model = train_neural_network("test")
-    _ = infer(model, ["2021-06-01 00:00:00.000", 1, -1, 2, 105, 110, -1, 0])
+    label = infer(model, [
+        {
+            'timestamp': '2021-06-01 00:00:00.000', 
+            'pir': 1, 
+            'touch_right': -1, 
+            'touch_left': 2, 
+            'light_right': 105, 
+            'light_left':110, 
+            'ir_right':-1, 
+            'ir_left':0,
+            'label': 'aula 8'
+        }])
+    print(label)
 
 
 if __name__ == "__main__":
