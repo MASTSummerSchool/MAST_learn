@@ -234,7 +234,7 @@ def infer(model, data: list) -> list:
     X, _ = preprocess_data(dataset) # preprocessiamo i dati dei sensori
     labels = model.predict(X)
     label = collections.Counter(labels).most_common()[0][0]
-    print(f"Labels: {label}")
+    print(f"Label: {label}")
 
     return label
 
