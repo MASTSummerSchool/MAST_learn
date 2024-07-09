@@ -32,14 +32,14 @@ namespace robot {
         Generator.addCode(`train_neural_network(${filename})`);
     }
 
-    //% block="Infer label with [MODEL] from condition [CONDITION]" blockType="command"
+    //% block="Infer label with [MODEL] from [READ_SENSOR]" blockType="command"
     //% MODEL.shadow="normal" MODEL.defl="'trained model'"
-    //% CONDITION.shadow="list" CONDITION.defl="'timestamp', 'pir', 'touch_right', 'touch_left', 'light_right', 'light_left', 'ir_right', 'ir_left'"
+    //% READ_SENSOR.shadow="list" READ_SENSOR.defl="'read sensor data'"
     export function infer(parameter: any, block: any) {
         let model = parameter.MODEL.code;
-        let condition = parameter.CONDITION.code;
+        let read = parameter.CONDITION.code;
         Generator.addImport(`from learn import infer`);
-        Generator.addCode(`infer(${model}, ${condition})`);
+        Generator.addCode(`infer(${model}, ${read})`);
     }
 
 }
