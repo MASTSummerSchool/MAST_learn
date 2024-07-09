@@ -112,7 +112,9 @@ def preprocess_data(data: List[List[str]]) -> Tuple[List[List[float]], List[str]
         X_tmp = []
         # create a list of features and append to X
         # timestamp: datetime to int seconds the first value
-        X_tmp.append(float(datetime_to_seconds(row[0])))  # Convert to float
+        seconds = datetime_to_seconds(row[0])
+        print(seconds)
+        X_tmp.append(float(seconds))  # Convert to float
         # pir,touch_left,touch_right,light_left,light_right,ir_left,ir_right: int values
         for j in range(1, 8):
             X_tmp.append(float(row[j]))  # Convert to float
