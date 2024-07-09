@@ -148,7 +148,7 @@ def train_decision_tree(filename: str):
     # Preprocessamento dei dati
     X, y = preprocess_data(data)
     print("Dati convertiti.")
-    print(X)
+    # print(X)
 
     # Addestramento del modello di albero decisionale
     model = tree.DecisionTreeClassifier(random_state=42)
@@ -191,7 +191,7 @@ def train_neural_network(filename: str, hidden_layer_sizes=(100,), max_iter=200)
     # Pre-processa i dati
     X, y = preprocess_data(data)
     print("Dati convertiti.")
-    print(X)
+    # print(X)
 
     # Addestramento del modello di rete neurale
     model = neural_network.MLPClassifier(
