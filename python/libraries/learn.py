@@ -7,6 +7,7 @@ from datetime import datetime
 
 import os
 import platform
+import collections
 
 
 def compose_path(filename: str, file_ext: str = '.csv') -> str:
@@ -112,7 +113,11 @@ def preprocess_data(data: List[List[str]]) -> Tuple[List[List[float]], List[str]
         X_tmp = []
         # create a list of features and append to X
         # timestamp: datetime to int seconds the first value
-        seconds = datetime_to_seconds(row[0])
+        if isinstance(row[0], str):
+            date = row[0]
+        else:
+            date = row[0].strftime('%Y-%m-%d %H:%M:%S.%f')
+        seconds = datetime_to_seconds(date)
         X_tmp.append(float(seconds))  # Convert to float
         # pir,touch_left,touch_right,light_left,light_right,ir_left,ir_right: int values
         for j in range(1, 8):
@@ -144,7 +149,6 @@ def train_decision_tree(filename: str):
 
     # Carica i dati
     _, data = load_data(path)
-    print(data)
     print("Dati caricati con successo.")
 
     # Preprocessamento dei dati
@@ -204,7 +208,7 @@ def train_neural_network(filename: str, hidden_layer_sizes=(100,), max_iter=200)
     return model
 
 
-def infer(model, data: list) -> str:
+def infer(model, data: list) -> list:
     """
     Make predictions using the trained model on the given data.
 
@@ -213,7 +217,7 @@ def infer(model, data: list) -> str:
     data (list): The data to make predictions on.
 
     Returns:
-    str: The predicted class label.
+    list: The list of predicted class label.
     """
     # Controllo sui parametri
     if not isinstance(data, list):
@@ -223,15 +227,14 @@ def infer(model, data: list) -> str:
 
     # Pre-processa i dati
     # data contiene un unico valore, un dizionario in prima posizione
-    header = data[0].keys() # le chiavi sono i nomi delle colonne
-    values = list(data[0].values()) # i valori sono i dati dei sensori 
-    print(values)
-    X, _ = preprocess_data(values) # preprocessiamo i dati dei sensori
-    print(f"Inferenza sul dato: {X}")
-
-    # Inferenza
-    label = model.predict([X])
-    print(f"Label: {label}")
+    dataset = []
+    for d in data:
+        dataset.append(list(d.values()))
+    
+    X, _ = preprocess_data(dataset) # preprocessiamo i dati dei sensori
+    labels = model.predict(X)
+    label = collections.Counter(labels).most_common()[0][0]
+    print(f"Labels: {label}")
 
     return label
 
@@ -241,7 +244,7 @@ def main():
     model = train_decision_tree("test")
     #model = train_neural_network("test")
     label = infer(model, [{
-            'timestamp': '2021-06-01 17:10:01.344', 
+            'timestamp': '2021-06-01 17:10:01.3449', 
             'pir': 1, 
             'touch_right': -1, 
             'touch_left': 2, 
