@@ -2,7 +2,7 @@
 namespace robot {
 
     //% block="Train decision tree from [FILENAME]" blockType="reporter"
-    //% FILENAME.shadow="string" FILENAME.defl="test"
+    //% FILENAME.shadow="string" FILENAME.defl="train"
     export function train_decision_tree(parameter: any, block: any) {
         // Initiating the variables as strings removing trailing and leading spaces
         let filename = parameter.FILENAME.code;
@@ -25,14 +25,14 @@ namespace robot {
     }
 
     //% block="Train neural network with [FILENAME]" blockType="reporter"
-    //% FILENAME.shadow="string" FILENAME.defl="test"
+    //% FILENAME.shadow="string" FILENAME.defl="train"
     export function train_neural_network(parameter: any, block: any) {
         let filename = parameter.FILENAME.code;
         Generator.addImport(`from learn import train_neural_network`);
         Generator.addCode(`train_neural_network(${filename})`);
     }
 
-    //% block="Infer label with [MODEL] from [DATA]" blockType="command"
+    //% block="Infer label with [MODEL] from [DATA]" blockType="reporter"
     //% MODEL.shadow="normal" MODEL.defl="'trained model'"
     //% DATA.shadow="list" DATA.defl="'read sensor data'"
     export function infer(parameter: any, block: any) {
