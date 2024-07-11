@@ -9,6 +9,8 @@ import os
 import platform
 import collections
 
+import pandas as pd
+
 
 def compose_path(filename: str, file_ext: str = '.csv') -> str:
     """
@@ -51,7 +53,7 @@ def compose_path(filename: str, file_ext: str = '.csv') -> str:
     return file_dir
 
 
-def load_data(path: str) -> Tuple[List[str], List[List[str]]]:
+def load_data_pd(path: str) -> Tuple[List[str], List[List[str]]]:
     """
     Load the data from the CSV file at the given path.
 
@@ -65,12 +67,10 @@ def load_data(path: str) -> Tuple[List[str], List[List[str]]]:
     if not isinstance(path, str):
         raise ValueError("Il parametro 'path' deve essere una stringa.")
 
-    # Carica i dati senza pandas
-    data = []
-    with open(path, "r") as file:
-        for line in file:
-            data.append(line.strip().split(","))
-    return data[0], data[1:]
+    # Carica i dati con pandas
+    data = pd.read_csv(path)
+
+    return data
 
 
 def datetime_to_seconds(dt_str: str) -> int:
@@ -92,16 +92,7 @@ def datetime_to_seconds(dt_str: str) -> int:
     return int(dt.timestamp())
 
 
-def preprocess_data(data: List[List[str]]) -> Tuple[List[List[float]], List[str]]:
-    """
-    Preprocess the given data.
-
-    Parameters:
-    data (List[List[str]]): The data to preprocess.
-
-    Returns:
-    Tuple[List[List[float]], List[str]]: The preprocessed data.
-    """
+def preprocess_data(data):
     # Controllo sui parametri
     if not isinstance(data, list):
         raise ValueError("Il parametro 'data' deve essere una lista.")
@@ -128,6 +119,35 @@ def preprocess_data(data: List[List[str]]) -> Tuple[List[List[float]], List[str]
     return X, y
 
 
+def preprocess_data_pd(data):
+    """
+    Preprocess the data.
+
+    Parameters:
+    data: The data to preprocess.
+    """
+    # Controllo sui parametri
+    if not isinstance(data, pd.DataFrame):
+        raise ValueError(
+            "Il parametro 'data' deve essere un DataFrame di pandas.")
+
+    # Split the data into features and labels
+    X = data.drop('label', axis=1)
+    y = data['label']
+
+    # Convert the timestamp to seconds
+    X['timestamp'] = pd.to_datetime(X['timestamp'])
+    X['timestamp'] = X['timestamp'].astype(int)
+
+    # Drop columns that contains only null values (-1)
+    X = X.loc[:, (X != -1).any(axis=0)]
+
+    # Convert numerical values to float
+    X = X.astype(float)
+
+    return X, y
+
+
 def train_decision_tree(filename: str):
     """
     Train a decision tree model on the data at the given path.
@@ -148,11 +168,11 @@ def train_decision_tree(filename: str):
     print(f"Path del file: {path}")
 
     # Carica i dati
-    _, data = load_data(path)
+    data = load_data_pd(path)
     print("Dati caricati con successo.")
 
     # Preprocessamento dei dati
-    X, y = preprocess_data(data)
+    X, y = preprocess_data_pd(data)
     print("Dati convertiti.")
     # print(X)
 
@@ -191,11 +211,11 @@ def train_neural_network(filename: str, hidden_layer_sizes=(100,), max_iter=200)
     print(f"Path del file: {path}")
 
     # Carica i dati
-    _, data = load_data(path)
+    data = load_data_pd(path)
     print("Dati caricati con successo.")
 
     # Pre-processa i dati
-    X, y = preprocess_data(data)
+    X, y = preprocess_data_pd(data)
     print("Dati convertiti.")
     # print(X)
 
@@ -223,17 +243,20 @@ def infer(model, data: list) -> list:
     if not isinstance(data, list):
         raise ValueError("Il parametro 'data' deve essere una lista.")
         if not isinstance(data[0], dict):
-            raise ValueError("Il primo valore di 'data' deve essere un dizionario.")
+            raise ValueError(
+                "Il primo valore di 'data' deve essere un dizionario.")
 
-    # Pre-processa i dati
-    # data contiene un unico valore, un dizionario in prima posizione
-    dataset = []
-    for d in data:
-        dataset.append(list(d.values()))
+    # Creazione del DataFrame di pandas
+    data = pd.DataFrame(data)
+
+    # Preprocessamento dei dati
+    X, _ = preprocess_data_pd(data)
     
-    X, _ = preprocess_data(dataset) # preprocessiamo i dati dei sensori
+    # Predizione
     labels = model.predict(X)
-    label = collections.Counter(labels).most_common()[0][0]
+
+    # Ritorna la label più comune
+    label = collections.Counter(labels).most_common(1)[0][0]
     print(f"Label: {label}")
 
     return label
@@ -241,19 +264,19 @@ def infer(model, data: list) -> list:
 
 def main():
     # Addestramento del modello di rete neurale
-    model = train_decision_tree("test")
-    #model = train_neural_network("test")
+    # model = train_decision_tree("test")
+    model = train_neural_network("test")
     label = infer(model, [{
-            'timestamp': '2021-06-01 17:10:01.3449', 
-            'pir': 1, 
-            'touch_right': -1, 
-            'touch_left': 2, 
-            'light_right': 105, 
-            'light_left':110, 
-            'ir_right':-1, 
-            'ir_left':0,
-            'label': 'aula 8'
-        }])
+        'timestamp': '2021-06-01 17:10:01.3449',
+        'pir': 1,
+        'touch_right': -1,
+        'touch_left': -1,
+        'light_right': -1,
+        'light_left': -1,
+        'ir_right': -1,
+        'ir_left': -1,
+        'label': 'aula 8'
+    }])
     print(label)
 
 
