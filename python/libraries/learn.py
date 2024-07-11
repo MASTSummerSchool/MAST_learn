@@ -135,8 +135,12 @@ def preprocess_data_pd(data):
     X = data.drop('label', axis=1)
     y = data['label']
 
-    # Convert the string to datetime and then to seconds
-    X['timestamp'] = X['timestamp'].apply(datetime_to_seconds)
+    # If in timestamp column there is a string, convert the string to datetime and then to seconds else convert to seconds
+    if isinstance(X['timestamp'][0], str):
+        X['timestamp'] = X['timestamp'].apply(datetime_to_seconds)
+    else:
+        X['timestamp'] = X['timestamp'].apply(
+            lambda x: int(x.timestamp()))
 
     # Drop columns that contains only null values (-1)
     X = X.loc[:, (X != -1).any(axis=0)]
@@ -266,7 +270,7 @@ def main():
     model = train_decision_tree("test")
     # model = train_neural_network("test")
     label = infer(model, [{
-        'timestamp': '2021-06-01 17:10:01.3449',
+        'timestamp': pd.to_datetime('2021-06-01 17:10:01.3449'),
         'pir': 1,
         'touch_right': -1,
         'touch_left': -1,
