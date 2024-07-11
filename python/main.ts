@@ -32,7 +32,7 @@ namespace robot {
         Generator.addCode(`train_neural_network(${filename})`);
     }
 
-    //% block="Infer label with [MODEL] from [DATA]" blockType="reporter"
+    //% block="Test [MODEL] to get label from [DATA]" blockType="reporter"
     //% MODEL.shadow="normal" MODEL.defl="'trained model'"
     //% DATA.shadow="list" DATA.defl="'read sensor data'"
     export function infer(parameter: any, block: any) {
