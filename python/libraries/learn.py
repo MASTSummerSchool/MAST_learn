@@ -135,9 +135,8 @@ def preprocess_data_pd(data):
     X = data.drop('label', axis=1)
     y = data['label']
 
-    # Convert the timestamp to seconds
-    X['timestamp'] = pd.to_datetime(X['timestamp'])
-    X['timestamp'] = X['timestamp'].astype(int)
+    # Convert the string to datetime and then to seconds
+    X['timestamp'] = X['timestamp'].apply(datetime_to_seconds)
 
     # Drop columns that contains only null values (-1)
     X = X.loc[:, (X != -1).any(axis=0)]
@@ -251,7 +250,7 @@ def infer(model, data: list) -> list:
 
     # Preprocessamento dei dati
     X, _ = preprocess_data_pd(data)
-    
+
     # Predizione
     labels = model.predict(X)
 
@@ -264,8 +263,8 @@ def infer(model, data: list) -> list:
 
 def main():
     # Addestramento del modello di rete neurale
-    # model = train_decision_tree("test")
-    model = train_neural_network("test")
+    model = train_decision_tree("test")
+    # model = train_neural_network("test")
     label = infer(model, [{
         'timestamp': '2021-06-01 17:10:01.3449',
         'pir': 1,
