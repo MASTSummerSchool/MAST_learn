@@ -12,21 +12,25 @@ Modulo di visione artificiale per la cattura di immagini da webcam e predizione 
 ## Blocchi Disponibili
 
 ### 🎥 Cattura Webcam
+
 - **`capture_webcam_image(camera_index)`** - Cattura un'immagine dalla webcam e la salva
   - `camera_index`: Indice della webcam (0 = webcam principale)
   - Restituisce: Percorso del file immagine salvato
 
 ### 🤖 Modello Custom  
+
 - **`load_custom_model(model_name)`** - Carica un modello Keras personalizzato
   - `model_name`: Nome del file modello (es. "mobilenet_NOME_v1.keras")
   - Restituisce: Modello caricato pronto per l'inferenza
 
 ### 🏷️ Etichette Custom
+
 - **`create_class_list(class1, class2, ..., class8)`** - Crea lista etichette personalizzate
   - `class1-8`: Le etichette del tuo modello (in ordine di training)
   - Restituisce: Lista di etichette da usare per la predizione
 
 ### 🔍 Predizione Immagine
+
 - **`predict_image_custom(model, image_path, class_names)`** - Predice oggetto e confidenza da immagine
   - `model`: Modello caricato con `load_custom_model`
   - `image_path`: Percorso del file immagine
@@ -34,6 +38,7 @@ Modulo di visione artificiale per la cattura di immagini da webcam e predizione 
   - Restituisce: Tupla (etichetta_predetta, punteggio_confidenza)
 
 ### ⚡ Workflow Completo
+
 - **`webcam_predict(model_name, camera_index, class_names)`** - Cattura + carica modello + predice
   - `model_name`: Nome del file modello
   - `camera_index`: Indice della webcam
@@ -67,6 +72,7 @@ Il modello custom MobileNet riconosce le seguenti 8 classi di oggetti:
 ## Esempio d'Uso
 
 ### Con Etichette Custom
+
 ```python
 # 1. Definisci le tue etichette (nell'ordine del training!)
 mie_etichette = create_class_list("gatto", "cane", "uccello", "pesce", "coniglio", "tartaruga", "hamster", "criceto")
@@ -78,6 +84,7 @@ print(f"Animale rilevato: {etichetta} ({confidenza:.2f})")
 ```
 
 ### Con Etichette Default  
+
 ```python
 # Usa le etichette di default (aqualy, calcolatrice_casio, ecc.)
 risultato = webcam_predict("mobilenet_NOME_v1.keras", 0, None)
@@ -86,6 +93,7 @@ print(f"Oggetto: {etichetta} ({confidenza:.2f})")
 ```
 
 ### Workflow Manuale
+
 ```python
 # 1. Cattura immagine
 immagine = capture_webcam_image(0)
@@ -116,6 +124,7 @@ print(f"Predizione: {etichetta}, Confidenza: {confidenza:.2f}")
 ## Attività Didattiche
 
 ### Computer Vision Hands-On
+
 1. **Setup**: Installazione dipendenze e configurazione webcam
 2. **Cattura**: Acquisizione immagini di oggetti diversi
 3. **Inferenza**: Caricamento modello e predizione oggetti
