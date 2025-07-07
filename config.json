@@ -3,7 +3,7 @@
     "en": "Learn Module @MAST"
   },
   "description": {
-    "en": "Enable machine learning algorithms with prediction confidence for the Petoi Coding Blocks of the Bittle"
+    "en": "Computer Vision blocks for webcam image capture and custom model inference"
   },
   "author": "Stefano Zingaro",
   "email": "stefano.zingaro@unibo.it",
@@ -16,7 +16,7 @@
     "web",
     "linux"
   ],
-  "version": "0.2.0",
+  "version": "1.0.0",
   "asset": {
     "python": {
       "dir": "python/",

@@ -1,4 +1,0 @@
-# Minimal dependencies for webcam + custom model inference only
-opencv-python>=4.5.0
-keras>=2.8.0
-numpy>=1.20.0

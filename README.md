@@ -1,76 +1,127 @@
-# Machine Learning library for the MAST summer school
+# Computer Vision Module for MAST Summer School
 
-## How to install
+## Descrizione
 
-Download and install [Mind+ Desktop app](https://mindplus.dfrobot.com).
+Modulo di visione artificiale per la cattura di immagini da webcam e predizione di oggetti utilizzando modelli MobileNet custom. Progettato per attività didattiche di intelligenza artificiale e computer vision.
 
-Input the project URL: **<https://github.com/lozingaro/MAST_learn>** in the interface to import this library.
+## Installazione
 
-## Proposta Attività Didattiche Hands-On per la Scuola Estiva su IoT e AI
-
-### Hands-On 1: Introduzione al Machine Learning
-Insegnare agli studenti le basi del machine learning, con una spiegazione dei diversi tipi di apprendimento automatico e un focus sull'apprendimento supervisionato tramite attività di laboratorio.
-
-### Hands-On 2: Alberi Decisionali
-Insegnare agli studenti come funzionano gli alberi decisionali e come implementarli per i compiti di classificazione attraverso un'attività unplugged e di laboratorio.
-
-### Hands-On 3: Reti Neurali
-Introdurre agli studenti le reti neurali e la loro applicazione in compiti di classificazione più complessi.
-
-### Hands-On 4: Classificazione in Tempo Reale con Bittle (Progetto Finale)
-Applicare i modelli addestrati per classificare i movimenti di Bittle in tempo reale, utilizzando anche la visione artificiale per riconoscimento di oggetti.
+1. Scarica e installa [Mind+ Desktop app](https://mindplus.dfrobot.com)
+2. Inserisci l'URL del progetto: **<https://github.com/lozingaro/MAST_learn>** nell'interfaccia per importare questa libreria
 
 ## Blocchi Disponibili
 
-### Blocchi di Addestramento
+### 🎥 Cattura Webcam
+- **`capture_webcam_image(camera_index)`** - Cattura un'immagine dalla webcam e la salva
+  - `camera_index`: Indice della webcam (0 = webcam principale)
+  - Restituisce: Percorso del file immagine salvato
 
-- `train_decision_tree(filename)`: Addestra un modello di albero decisionale dai dati CSV
-- `train_neural_network(filename)`: Addestra un modello di rete neurale dai dati CSV
+### 🤖 Modello Custom  
+- **`load_custom_model(model_name)`** - Carica un modello Keras personalizzato
+  - `model_name`: Nome del file modello (es. "mobilenet_NOME_v1.keras")
+  - Restituisce: Modello caricato pronto per l'inferenza
 
-### Blocchi di Predizione
+### 🏷️ Etichette Custom
+- **`create_class_list(class1, class2, ..., class8)`** - Crea lista etichette personalizzate
+  - `class1-8`: Le etichette del tuo modello (in ordine di training)
+  - Restituisce: Lista di etichette da usare per la predizione
 
-- `infer(model, data)`: Effettua predizioni usando un modello addestrato (restituisce la label più comune)
-- `get_label(model, data)`: Ottiene la label predetta per un singolo punto dati
-- `get_confidence_score(model, data)`: Ottiene il punteggio di confidenza (probabilità) per una predizione
+### 🔍 Predizione Immagine
+- **`predict_image_custom(model, image_path, class_names)`** - Predice oggetto e confidenza da immagine
+  - `model`: Modello caricato con `load_custom_model`
+  - `image_path`: Percorso del file immagine
+  - `class_names`: Lista etichette (opzionale, usa default se None)
+  - Restituisce: Tupla (etichetta_predetta, punteggio_confidenza)
 
-### Blocchi di Visione Artificiale
+### ⚡ Workflow Completo
+- **`webcam_predict(model_name, camera_index, class_names)`** - Cattura + carica modello + predice
+  - `model_name`: Nome del file modello
+  - `camera_index`: Indice della webcam
+  - `class_names`: Lista etichette (opzionale, usa default se None)
+  - Restituisce: Tupla (etichetta_predetta, punteggio_confidenza)
 
-- `capture_webcam_image(camera_index)`: Cattura un'immagine dalla webcam e la salva
-- `load_custom_model(model_name)`: Carica un modello TensorFlow custom addestrato
-- `predict_image_custom(model, image_path)`: Predice l'etichetta e il punteggio di confidenza per un'immagine
-- `webcam_predict(model_name, camera_index)`: Cattura un'immagine dalla webcam e fa predizione con modello custom
+## Classi Supportate
 
-### Formato Dati
+Il modello custom MobileNet riconosce le seguenti 8 classi di oggetti:
 
-I dati CSV devono avere il seguente formato:
+- `aqualy` - Bottiglia d'acqua
+- `calcolatrice_casio` - Calcolatrice Casio
+- `bicchiere` - Bicchiere
+- `iphone13` - iPhone 13
+- `mouse_wireless` - Mouse wireless
+- `pennarello_giotto` - Pennarello Giotto
+- `persona` - Persona
+- `webcam_box` - Scatola webcam
+
+## Struttura File
 
 ```
-timestamp,pir,touch_right,touch_left,light_right,light_left,ir_right,ir_left,label
+~/MAST_learn/
+└── test/
+    └── mobilenet_NOME_v1.keras    # Modello custom
+
+~/webcam_images/
+└── webcam_capture.jpg             # Immagini catturate
 ```
 
-### Requisiti
+## Esempio d'Uso
 
-**Per Visione Artificiale (webcam + modello custom):**
-- opencv-python >= 4.5.0
-- keras >= 2.8.0  
-- numpy >= 1.20.0
+### Con Etichette Custom
+```python
+# 1. Definisci le tue etichette (nell'ordine del training!)
+mie_etichette = create_class_list("gatto", "cane", "uccello", "pesce", "coniglio", "tartaruga", "hamster", "criceto")
 
-**Per ML su Sensori (opzionale):**
-- scikit-learn >= 1.0.0
-- pandas >= 1.3.0
+# 2. Cattura e predici con etichette custom
+risultato = webcam_predict("mio_modello_animali.keras", 0, mie_etichette)
+etichetta, confidenza = risultato
+print(f"Animale rilevato: {etichetta} ({confidenza:.2f})")
+```
 
-### Classi Supportate (Modello Custom)
+### Con Etichette Default  
+```python
+# Usa le etichette di default (aqualy, calcolatrice_casio, ecc.)
+risultato = webcam_predict("mobilenet_NOME_v1.keras", 0, None)
+etichetta, confidenza = risultato
+print(f"Oggetto: {etichetta} ({confidenza:.2f})")
+```
 
-Il modello custom supporta le seguenti classi:
-- aqualy
-- calcolatrice_casio
-- bicchiere
-- iphone13
-- mouse_wireless
-- pennarello_giotto
-- persona
-- webcam_box
+### Workflow Manuale
+```python
+# 1. Cattura immagine
+immagine = capture_webcam_image(0)
+
+# 2. Carica modello  
+modello = load_custom_model("mio_modello.keras")
+
+# 3. Crea etichette custom
+etichette = create_class_list("classe1", "classe2", "classe3", "classe4", "classe5", "classe6", "classe7", "classe8")
+
+# 4. Predici
+etichetta, confidenza = predict_image_custom(modello, immagine, etichette)
+print(f"Predizione: {etichetta}, Confidenza: {confidenza:.2f}")
+```
+
+## Requisiti Tecnici
+
+- **opencv-python** >= 4.5.0 - Cattura e elaborazione immagini
+- **keras** >= 2.8.0 - Caricamento e inferenza modello
+- **numpy** >= 1.20.0 - Operazioni array
+
+## Configurazione Webcam
+
+- **Indice 0**: Webcam principale/integrata
+- **Indice 1**: Prima webcam esterna USB
+- **Indice 2**: Seconda webcam esterna USB
+
+## Attività Didattiche
+
+### Computer Vision Hands-On
+1. **Setup**: Installazione dipendenze e configurazione webcam
+2. **Cattura**: Acquisizione immagini di oggetti diversi
+3. **Inferenza**: Caricamento modello e predizione oggetti
+4. **Analisi**: Interpretazione confidence score e accuratezza
+5. **Esperimenti**: Test con oggetti diversi e condizioni di luce
 
 ## Versione
 
-v0.2.0 - Aggiunta dei blocchi per visione artificiale con webcam e predizione su immagini con modelli custom TensorFlow
+**v1.0.0** - Modulo Computer Vision dedicato con 4 blocchi per webcam e inferenza modelli custom MobileNet
