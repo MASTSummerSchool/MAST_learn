@@ -1,4 +1,10 @@
 //% color="#F7AD45" iconWidth=50 iconHeight=40
+// Ensure Generator is imported or defined
+declare const Generator: {
+    addImport: (importStr: string) => void;
+    addCode: (codeStr: string) => void;
+};
+
 namespace robot {
 
     //% block="Capture image from webcam [CAMERA_INDEX]" blockType="reporter"
@@ -7,7 +13,7 @@ namespace robot {
         let camera_index = parameter.CAMERA_INDEX.code;
         Generator.addImport(`from learn import capture_webcam_image`);
         Generator.addCode(`capture_webcam_image(${camera_index})`);
-        
+
         // Add comments
         Generator.addCode(`# This block captures an image from the webcam and saves it to:`);
         Generator.addCode(`# Windows: C:\\Users\\{your user name}\\webcam_images`);
@@ -21,7 +27,7 @@ namespace robot {
         let model_name = parameter.MODEL_NAME.code;
         Generator.addImport(`from learn import load_custom_model`);
         Generator.addCode(`load_custom_model(${model_name})`);
-        
+
         // Add comments
         Generator.addCode(`# This block loads a custom trained model from:`);
         Generator.addCode(`# Windows: C:\\Users\\{your user name}\\MAST_learn\\test`);
@@ -49,7 +55,7 @@ namespace robot {
         let class8 = parameter.CLASS8.code;
         Generator.addImport(`from learn import create_class_list`);
         Generator.addCode(`create_class_list(${class1}, ${class2}, ${class3}, ${class4}, ${class5}, ${class6}, ${class7}, ${class8})`);
-        
+
         // Add comments
         Generator.addCode(`# Creates a list of class names for your custom model`);
         Generator.addCode(`# Use this list with predict_image_custom or webcam_predict`);
@@ -65,7 +71,7 @@ namespace robot {
         let class_names = parameter.CLASS_NAMES.code;
         Generator.addImport(`from learn import predict_image_custom`);
         Generator.addCode(`predict_image_custom(${model}, ${image_path}, ${class_names})`);
-        
+
         // Add comments
         Generator.addCode(`# Returns tuple: (predicted_class, confidence_score)`);
         Generator.addCode(`# If class_names is None, uses default classes`);
@@ -81,7 +87,7 @@ namespace robot {
         let class_names = parameter.CLASS_NAMES.code;
         Generator.addImport(`from learn import webcam_predict`);
         Generator.addCode(`webcam_predict(${model_name}, ${camera_index}, ${class_names})`);
-        
+
         // Add comments
         Generator.addCode(`# Complete workflow: capture image + load model + predict`);
         Generator.addCode(`# Returns tuple: (predicted_class, confidence_score)`);

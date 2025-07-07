@@ -2,6 +2,7 @@ import os
 import platform
 import cv2
 import numpy as np
+from typing import Optional
 
 try:
     from keras.models import load_model
@@ -30,12 +31,16 @@ def compose_path(filename: str, file_ext: str = '.jpg') -> str:
     if platform.system() == "Windows":
         sep = '\\'
         home_dir = os.getenv('HOMEDRIVE')
-        home_path = os.getenv('HomePath')
-        config_dir = home_dir + home_path
+        home_path = os.getenv('HOMEPATH')
+        if home_dir is not None and home_path is not None:
+            config_dir = home_dir + home_path
+        else:
+            # Fallback to user profile or current directory
+            config_dir = os.getenv('USERPROFILE', os.getcwd())
     else:  # for Linux & macOS
         sep = '/'
         home = os.getenv('HOME')
-        config_dir = home
+        config_dir = home if home is not None else os.getcwd()
 
     # Create the data directory
     data_dir = config_dir + sep + 'webcam_images'
@@ -60,27 +65,28 @@ def capture_webcam_image(camera_index: int = 0) -> str:
     """
     if not isinstance(camera_index, int) or camera_index < 0:
         raise ValueError("camera_index deve essere un intero non negativo.")
-    
+
     # Initialize webcam
     cap = cv2.VideoCapture(camera_index)
-    
+
     if not cap.isOpened():
-        raise RuntimeError(f"Impossibile accedere alla webcam con indice {camera_index}")
-    
+        raise RuntimeError(
+            f"Impossibile accedere alla webcam con indice {camera_index}")
+
     # Capture frame
     ret, frame = cap.read()
-    
+
     if not ret:
         cap.release()
         raise RuntimeError("Impossibile catturare l'immagine dalla webcam")
-    
+
     # Release the camera
     cap.release()
-    
+
     # Save the captured image temporarily
     temp_path = compose_path("webcam_capture", ".jpg")
     cv2.imwrite(temp_path, frame)
-    
+
     print(f"Immagine catturata e salvata in: {temp_path}")
     return temp_path
 
@@ -96,8 +102,9 @@ def load_custom_model(model_name: str = "mobilenet_NOME_v1.keras"):
     model: The loaded Keras model.
     """
     if not HAS_KERAS:
-        raise ImportError("Keras non è installato. Installare con: pip install keras")
-    
+        raise ImportError(
+            "Keras non è installato. Installare con: pip install keras")
+
     # Compose path for the model
     if platform.system() == "Windows":
         sep = '\\'
@@ -108,22 +115,22 @@ def load_custom_model(model_name: str = "mobilenet_NOME_v1.keras"):
         sep = '/'
         home = os.getenv('HOME')
         config_dir = home
-    
+
     # Create the model directory path
     model_dir = config_dir + sep + 'MAST_learn' + sep + 'test'
     model_path = model_dir + sep + model_name
-    
+
     # Check if model exists
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Modello non trovato: {model_path}")
-    
+
     # Load the model
     model = load_model(model_path)
     print(f"Modello caricato: {model_path}")
-    
+
     return model
 
-
+def predict_image_custom(model, image_path: str, class_names: Optional[list] = None):
 def predict_image_custom(model, image_path: str, class_names: list = None):
     """
     Make prediction on an image using a custom trained model.
@@ -137,46 +144,47 @@ def predict_image_custom(model, image_path: str, class_names: list = None):
     tuple: (predicted_class, confidence_score)
     """
     if not HAS_KERAS:
-        raise ImportError("Keras non è installato. Installare con: pip install keras")
-    
+        raise ImportError(
+            "Keras non è installato. Installare con: pip install keras")
+
     # Use provided class names or default ones
     if class_names is None:
         class_names = [
             "aqualy", "calcolatrice_casio", "bicchiere", "iphone13", "mouse_wireless",
             "pennarello_giotto", "persona", "webcam_box"
         ]
-    
+
     CLASS_NAMES = class_names
-    
+
     IMG_SIZE = (224, 224)
-    
+
     # Check if image exists
     if not os.path.exists(image_path):
         raise FileNotFoundError(f"Immagine non trovata: {image_path}")
-    
+
     # Load and preprocess the image
     image = cv2.imread(image_path)
     if image is None:
         raise ValueError(f"Impossibile caricare l'immagine: {image_path}")
-    
+
     # Resize and preprocess
     image = cv2.resize(image, IMG_SIZE)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
     img_array = img_to_array(image)
     img_array = np.expand_dims(img_array, axis=0)
     img_array = keras.applications.mobilenet_v3.preprocess_input(img_array)
-    
+
     # Make prediction
     predictions = model.predict(img_array)
-    
+
     # Get predicted class and confidence
     predicted_class_idx = np.argmax(predictions)
     predicted_class = CLASS_NAMES[predicted_class_idx]
     confidence_score = float(predictions[0][predicted_class_idx])
-    
+
     print(f"Classe predetta: {predicted_class}")
     print(f"Confidence score: {confidence_score:.4f}")
-    
+
     return predicted_class, confidence_score
 
 
@@ -194,13 +202,14 @@ def webcam_predict(model_name: str = "mobilenet_NOME_v1.keras", camera_index: in
     """
     # Capture image from webcam
     image_path = capture_webcam_image(camera_index)
-    
+
     # Load model
     model = load_custom_model(model_name)
-    
+
     # Make prediction
-    predicted_class, confidence_score = predict_image_custom(model, image_path, class_names)
-    
+    predicted_class, confidence_score = predict_image_custom(
+        model, image_path, class_names)
+
     return predicted_class, confidence_score
 
 
