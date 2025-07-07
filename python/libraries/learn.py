@@ -10,6 +10,16 @@ import platform
 import collections
 
 import pandas as pd
+import cv2
+import numpy as np
+
+try:
+    from keras.models import load_model
+    from keras.preprocessing.image import img_to_array
+    import keras.applications.mobilenet_v3
+    HAS_KERAS = True
+except ImportError:
+    HAS_KERAS = False
 
 
 def compose_path(filename: str, file_ext: str = '.csv') -> str:
@@ -245,9 +255,9 @@ def infer(model, data: list) -> list:
     # Controllo sui parametri
     if not isinstance(data, list):
         raise ValueError("Il parametro 'data' deve essere una lista.")
-        if not isinstance(data[0], dict):
-            raise ValueError(
-                "Il primo valore di 'data' deve essere un dizionario.")
+    if not isinstance(data[0], dict):
+        raise ValueError(
+            "Il primo valore di 'data' deve essere un dizionario.")
 
     # Creazione del DataFrame di pandas
     data = pd.DataFrame(data)
@@ -263,6 +273,234 @@ def infer(model, data: list) -> list:
     print(f"Label: {label}")
 
     return label
+
+
+def get_label(model, data: list) -> str:
+    """
+    Get the predicted label for a single data point using the trained model.
+
+    Parameters:
+    model: The trained model to use for prediction.
+    data (list): The data to make predictions on.
+
+    Returns:
+    str: The predicted label.
+    """
+    # Controllo sui parametri
+    if not isinstance(data, list):
+        raise ValueError("Il parametro 'data' deve essere una lista.")
+    if not isinstance(data[0], dict):
+        raise ValueError(
+            "Il primo valore di 'data' deve essere un dizionario.")
+
+    # Creazione del DataFrame di pandas
+    data = pd.DataFrame(data)
+
+    # Preprocessamento dei dati
+    X, _ = preprocess_data_pd(data)
+
+    # Predizione
+    label = model.predict(X)[0]
+    print(f"Predicted label: {label}")
+
+    return label
+
+
+def get_confidence_score(model, data: list) -> float:
+    """
+    Get the confidence score (maximum probability) for a prediction using the trained model.
+
+    Parameters:
+    model: The trained model to use for prediction.
+    data (list): The data to make predictions on.
+
+    Returns:
+    float: The confidence score (probability of the predicted class).
+    """
+    # Controllo sui parametri
+    if not isinstance(data, list):
+        raise ValueError("Il parametro 'data' deve essere una lista.")
+    if not isinstance(data[0], dict):
+        raise ValueError(
+            "Il primo valore di 'data' deve essere un dizionario.")
+
+    # Creazione del DataFrame di pandas
+    data = pd.DataFrame(data)
+
+    # Preprocessamento dei dati
+    X, _ = preprocess_data_pd(data)
+
+    # Predizione delle probabilità
+    try:
+        probabilities = model.predict_proba(X)[0]
+        confidence = max(probabilities)
+        print(f"Confidence score: {confidence}")
+        return confidence
+    except AttributeError:
+        # If the model doesn't support predict_proba (e.g., some sklearn models)
+        # Use decision_function or return a default confidence
+        try:
+            decision_scores = model.decision_function(X)[0]
+            # Convert decision scores to a confidence-like measure
+            confidence = abs(max(decision_scores, key=abs))
+            print(f"Confidence score (from decision function): {confidence}")
+            return confidence
+        except:
+            # Default confidence when no probability method is available
+            print("Model doesn't support probability estimation, returning default confidence")
+            return 1.0
+
+
+def capture_webcam_image(camera_index: int = 0) -> str:
+    """
+    Capture an image from the webcam and save it temporarily.
+
+    Parameters:
+    camera_index (int): Index of the camera to use (default: 0 for primary camera).
+
+    Returns:
+    str: Path to the captured image file.
+    """
+    # Check if camera_index is valid
+    if not isinstance(camera_index, int) or camera_index < 0:
+        raise ValueError("camera_index deve essere un intero non negativo.")
+    
+    # Initialize webcam
+    cap = cv2.VideoCapture(camera_index)
+    
+    if not cap.isOpened():
+        raise RuntimeError(f"Impossibile accedere alla webcam con indice {camera_index}")
+    
+    # Capture frame
+    ret, frame = cap.read()
+    
+    if not ret:
+        cap.release()
+        raise RuntimeError("Impossibile catturare l'immagine dalla webcam")
+    
+    # Release the camera
+    cap.release()
+    
+    # Save the captured image temporarily
+    temp_path = compose_path("webcam_capture", ".jpg")
+    cv2.imwrite(temp_path, frame)
+    
+    print(f"Immagine catturata e salvata in: {temp_path}")
+    return temp_path
+
+
+def load_custom_model(model_name: str = "mobilenet_NOME_v1.keras"):
+    """
+    Load a custom trained model.
+
+    Parameters:
+    model_name (str): Name of the model file.
+
+    Returns:
+    model: The loaded TensorFlow model.
+    """
+    if not HAS_KERAS:
+        raise ImportError("Keras non è installato. Installare con: pip install keras")
+    
+    # Compose path for the model
+    if platform.system() == "Windows":
+        sep = '\\'
+        home_dir = os.getenv('HOMEDRIVE')
+        home_path = os.getenv('HomePath')
+        config_dir = home_dir + home_path
+    else:  # for Linux & macOS
+        sep = '/'
+        home = os.getenv('HOME')
+        config_dir = home
+    
+    # Create the model directory path
+    model_dir = config_dir + sep + 'MAST_learn' + sep + 'test'
+    model_path = model_dir + sep + model_name
+    
+    # Check if model exists
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Modello non trovato: {model_path}")
+    
+    # Load the model
+    model = load_model(model_path)
+    print(f"Modello caricato: {model_path}")
+    
+    return model
+
+
+def predict_image_custom(model, image_path: str):
+    """
+    Make prediction on an image using a custom trained model.
+
+    Parameters:
+    model: The trained TensorFlow model.
+    image_path (str): Path to the image file.
+
+    Returns:
+    tuple: (predicted_class, confidence_score)
+    """
+    if not HAS_KERAS:
+        raise ImportError("Keras non è installato. Installare con: pip install keras")
+    
+    # Default class names (can be made configurable)
+    CLASS_NAMES = [
+        "aqualy", "calcolatrice_casio", "bicchiere", "iphone13", "mouse_wireless",
+        "pennarello_giotto", "persona", "webcam_box"
+    ]
+    
+    IMG_SIZE = (224, 224)
+    
+    # Check if image exists
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"Immagine non trovata: {image_path}")
+    
+    # Load and preprocess the image
+    image = cv2.imread(image_path)
+    if image is None:
+        raise ValueError(f"Impossibile caricare l'immagine: {image_path}")
+    
+    # Resize and preprocess
+    image = cv2.resize(image, IMG_SIZE)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
+    img_array = img_to_array(image)
+    img_array = np.expand_dims(img_array, axis=0)
+    img_array = keras.applications.mobilenet_v3.preprocess_input(img_array)
+    
+    # Make prediction
+    predictions = model.predict(img_array)
+    
+    # Get predicted class and confidence
+    predicted_class_idx = np.argmax(predictions)
+    predicted_class = CLASS_NAMES[predicted_class_idx]
+    confidence_score = float(predictions[0][predicted_class_idx])
+    
+    print(f"Classe predetta: {predicted_class}")
+    print(f"Confidence score: {confidence_score:.4f}")
+    
+    return predicted_class, confidence_score
+
+
+def webcam_predict(model_name: str = "mobilenet_NOME_v1.keras", camera_index: int = 0):
+    """
+    Capture image from webcam and predict using custom model.
+
+    Parameters:
+    model_name (str): Name of the model file.
+    camera_index (int): Index of the camera to use.
+
+    Returns:
+    tuple: (predicted_class, confidence_score)
+    """
+    # Capture image from webcam
+    image_path = capture_webcam_image(camera_index)
+    
+    # Load model
+    model = load_custom_model(model_name)
+    
+    # Make prediction
+    predicted_class, confidence_score = predict_image_custom(model, image_path)
+    
+    return predicted_class, confidence_score
 
 
 def main():
