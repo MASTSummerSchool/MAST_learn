@@ -3,7 +3,7 @@
     "en": "Learn Module @MAST"
   },
   "description": {
-    "en": "Computer Vision blocks for webcam image capture and custom model inference"
+    "en": "Essential Computer Vision blocks: webcam capture, model loading, label and confidence prediction"
   },
   "author": "Stefano Zingaro",
   "email": "stefano.zingaro@unibo.it",
@@ -16,7 +16,7 @@
     "web",
     "linux"
   ],
-  "version": "1.1.0",
+  "version": "2.0.0",
   "asset": {
     "python": {
       "dir": "python/",
