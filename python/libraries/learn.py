@@ -96,7 +96,8 @@ def capture_webcam_image(camera_index: int = 0) -> str:
     cap.release()
 
     # Save the captured image with unique timestamp
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]  # Include milliseconds
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")[
+        :-3]  # Include milliseconds
     temp_path = compose_path(f"webcam_capture_{timestamp}", ".jpg")
     cv2.imwrite(temp_path, frame)
 
@@ -116,7 +117,7 @@ def load_custom_model(model_path: str = "mobilenet_NOME_v1.keras"):
 
     Returns:
     model: The loaded Keras model.
-    
+
     Note: .keras files are automatically converted to .h5 format for better Mind+ compatibility.
     """
     if not HAS_KERAS:
@@ -139,7 +140,8 @@ def load_custom_model(model_path: str = "mobilenet_NOME_v1.keras"):
         h5_path = _auto_convert_keras_to_h5(final_model_path)
         if h5_path:
             final_model_path = h5_path
-            print(f"🔄 Modello automaticamente convertito da .keras a .h5 per compatibilità")
+            print(
+                f"🔄 Modello automaticamente convertito da .keras a .h5 per compatibilità")
 
     # Load the model with enhanced error handling
     try:
@@ -149,7 +151,7 @@ def load_custom_model(model_path: str = "mobilenet_NOME_v1.keras"):
         return model
     except Exception as e:
         print(f"⚠️ Errore caricamento con compile=False: {e}")
-        
+
         # Try alternative loading methods
         try:
             # Try with standard loading
@@ -158,28 +160,31 @@ def load_custom_model(model_path: str = "mobilenet_NOME_v1.keras"):
             return model
         except Exception as e2:
             print(f"⚠️ Errore caricamento standard: {e2}")
-            
+
             # Try loading saved_model format if it's a directory
             if os.path.isdir(final_model_path):
                 try:
                     import tensorflow as tf
                     model = tf.keras.models.load_model(final_model_path)
-                    print(f"✅ Modello caricato (SavedModel): {final_model_path}")
+                    print(
+                        f"✅ Modello caricato (SavedModel): {final_model_path}")
                     return model
                 except Exception as e3:
                     print(f"⚠️ Errore SavedModel: {e3}")
-            
+
             # If .keras conversion failed, try manual conversion as last resort
             if model_path.endswith('.keras') and final_model_path.endswith('.keras'):
                 print("🔄 Tentativo conversione manuale .keras → .h5...")
                 try:
-                    converted_path = convert_model_format(final_model_path, target_format="h5")
+                    converted_path = convert_model_format(
+                        final_model_path, target_format="h5")
                     model = load_model(converted_path, compile=False)
-                    print(f"✅ Modello caricato dopo conversione manuale: {converted_path}")
+                    print(
+                        f"✅ Modello caricato dopo conversione manuale: {converted_path}")
                     return model
                 except Exception as e4:
                     print(f"⚠️ Errore conversione manuale: {e4}")
-            
+
             # If all methods fail, provide detailed error information
             error_msg = f"""
 ❌ Errore caricamento modello: {final_model_path}
@@ -199,7 +204,8 @@ Versioni in uso:
 - Formato file: {_detect_model_format(final_model_path)}
 """
             print(error_msg)
-            raise RuntimeError(f"Impossibile caricare il modello: {final_model_path}. Vedere dettagli sopra.")
+            raise RuntimeError(
+                f"Impossibile caricare il modello: {final_model_path}. Vedere dettagli sopra.")
 
 
 def _get_tf_version() -> str:
@@ -215,10 +221,10 @@ def _detect_model_format(model_path: str) -> str:
     """Detect model format for debugging."""
     if not os.path.exists(model_path):
         return "File non esistente"
-    
+
     if os.path.isdir(model_path):
         return "SavedModel (directory)"
-    
+
     if model_path.endswith('.keras'):
         return "Keras (.keras)"
     elif model_path.endswith('.h5'):
@@ -232,15 +238,15 @@ def _detect_model_format(model_path: str) -> str:
 def verify_model_compatibility(model_path: str) -> dict:
     """
     Verify model compatibility and provide diagnostic information.
-    
+
     Parameters:
     model_path (str): Path to the model file.
-    
+
     Returns:
     dict: Diagnostic information about the model.
     """
     import tensorflow as tf
-    
+
     info = {
         "path": model_path,
         "exists": os.path.exists(model_path),
@@ -251,52 +257,58 @@ def verify_model_compatibility(model_path: str) -> dict:
         "error": None,
         "suggestions": []
     }
-    
+
     if info["exists"]:
         try:
             if os.path.isfile(model_path):
-                info["size_mb"] = round(os.path.getsize(model_path) / (1024*1024), 2)
-            
+                info["size_mb"] = round(
+                    os.path.getsize(model_path) / (1024*1024), 2)
+
             # Try loading with different methods
             try:
                 model = load_model(model_path, compile=False)
                 info["loadable"] = True
-                info["input_shape"] = str(model.input_shape) if hasattr(model, 'input_shape') else "N/A"
-                info["output_shape"] = str(model.output_shape) if hasattr(model, 'output_shape') else "N/A"
-                info["layers_count"] = len(model.layers) if hasattr(model, 'layers') else 0
+                info["input_shape"] = str(model.input_shape) if hasattr(
+                    model, 'input_shape') else "N/A"
+                info["output_shape"] = str(model.output_shape) if hasattr(
+                    model, 'output_shape') else "N/A"
+                info["layers_count"] = len(
+                    model.layers) if hasattr(model, 'layers') else 0
             except Exception as e:
                 info["error"] = str(e)
                 info["suggestions"].append("Provare con compile=False")
-                
+
                 if ".keras" in model_path:
-                    info["suggestions"].append("Convertire a formato .h5 se possibile")
-                    info["suggestions"].append("Verificare compatibilità versione TensorFlow")
-                
+                    info["suggestions"].append(
+                        "Convertire a formato .h5 se possibile")
+                    info["suggestions"].append(
+                        "Verificare compatibilità versione TensorFlow")
+
         except Exception as e:
             info["error"] = str(e)
     else:
         info["suggestions"].append("Verificare che il file esista")
         info["suggestions"].append("Controllare il percorso del file")
-    
+
     return info
 
 
 def _auto_convert_keras_to_h5(keras_path: str) -> str:
     """
     Automatically convert .keras file to .h5 format with caching.
-    
+
     Parameters:
     keras_path (str): Path to the .keras file.
-    
+
     Returns:
     str: Path to the converted .h5 file, or None if conversion failed.
     """
     if not keras_path.endswith('.keras'):
         return None
-    
+
     # Generate .h5 path
     h5_path = keras_path.replace('.keras', '_auto_converted.h5')
-    
+
     # Check if already converted and cached
     if os.path.exists(h5_path):
         # Check if .h5 file is newer than .keras file
@@ -307,35 +319,36 @@ def _auto_convert_keras_to_h5(keras_path: str) -> str:
             return h5_path
         else:
             print(f"🔄 Modello .keras più recente, riconversione necessaria")
-    
+
     # Attempt automatic conversion
     try:
         print(f"🔄 Conversione automatica {keras_path} → {h5_path}")
-        
+
         # Try to load the .keras model with different methods
         model = None
         load_methods = [
             lambda: load_model(keras_path, compile=False),
             lambda: load_model(keras_path),
         ]
-        
+
         for i, method in enumerate(load_methods):
             try:
                 model = method()
-                print(f"✅ Modello .keras caricato per conversione (metodo {i+1})")
+                print(
+                    f"✅ Modello .keras caricato per conversione (metodo {i+1})")
                 break
             except Exception as e:
                 print(f"⚠️ Metodo {i+1} fallito: {e}")
                 continue
-        
+
         if model is None:
             print(f"❌ Impossibile caricare .keras per conversione")
             return None
-        
+
         # Save as .h5
         model.save(h5_path, save_format='h5')
         print(f"✅ Conversione automatica completata: {h5_path}")
-        
+
         # Verify the converted model
         try:
             test_model = load_model(h5_path, compile=False)
@@ -345,7 +358,7 @@ def _auto_convert_keras_to_h5(keras_path: str) -> str:
             print(f"⚠️ Problemi con il modello convertito: {e}")
             # Return the path anyway, it might still work
             return h5_path
-            
+
     except Exception as e:
         print(f"⚠️ Conversione automatica fallita: {e}")
         return None
@@ -354,18 +367,18 @@ def _auto_convert_keras_to_h5(keras_path: str) -> str:
 def convert_model_format(input_path: str, output_path: str = None, target_format: str = "h5") -> str:
     """
     Convert model between different formats to solve compatibility issues.
-    
+
     Parameters:
     input_path (str): Path to input model.
     output_path (str): Path for output model (optional).
     target_format (str): Target format ('h5', 'keras', 'saved_model').
-    
+
     Returns:
     str: Path to converted model.
     """
     if not os.path.exists(input_path):
         raise FileNotFoundError(f"Modello non trovato: {input_path}")
-    
+
     # Generate output path if not provided
     if output_path is None:
         base_name = os.path.splitext(input_path)[0]
@@ -377,17 +390,17 @@ def convert_model_format(input_path: str, output_path: str = None, target_format
             output_path = f"{base_name}_converted_savedmodel"
         else:
             raise ValueError(f"Formato non supportato: {target_format}")
-    
+
     try:
         print(f"🔄 Conversione modello da {input_path} a {output_path}")
-        
+
         # Load the model with best method available
         model = None
         load_methods = [
             lambda: load_model(input_path, compile=False),
             lambda: load_model(input_path),
         ]
-        
+
         for i, method in enumerate(load_methods):
             try:
                 model = method()
@@ -396,10 +409,11 @@ def convert_model_format(input_path: str, output_path: str = None, target_format
             except Exception as e:
                 print(f"⚠️ Metodo {i+1} fallito: {e}")
                 continue
-        
+
         if model is None:
-            raise RuntimeError("Impossibile caricare il modello con nessun metodo")
-        
+            raise RuntimeError(
+                "Impossibile caricare il modello con nessun metodo")
+
         # Save in target format
         if target_format == "h5":
             model.save(output_path, save_format='h5')
@@ -408,10 +422,11 @@ def convert_model_format(input_path: str, output_path: str = None, target_format
         elif target_format == "saved_model":
             model.save(output_path, save_format='tf')
         else:
-            raise ValueError(f"Formato di output non supportato: {target_format}")
-        
+            raise ValueError(
+                f"Formato di output non supportato: {target_format}")
+
         print(f"✅ Modello convertito salvato: {output_path}")
-        
+
         # Verify the converted model loads correctly
         try:
             test_model = load_model(output_path, compile=False)
@@ -420,7 +435,7 @@ def convert_model_format(input_path: str, output_path: str = None, target_format
         except Exception as e:
             print(f"⚠️ Problemi con il modello convertito: {e}")
             return output_path
-            
+
     except Exception as e:
         error_msg = f"❌ Errore durante la conversione: {str(e)}"
         print(error_msg)
@@ -444,11 +459,11 @@ def _get_local_model_path(model_name: str) -> str:
 
     # Create the model directory path
     model_dir = config_dir + sep + 'models'
-    
+
     # Create directory if it doesn't exist
     if not os.path.exists(model_dir):
         os.makedirs(model_dir)
-    
+
     return model_dir + sep + model_name
 
 
@@ -458,29 +473,30 @@ def _download_model_from_url(url: str) -> str:
         # Parse URL to get filename
         parsed_url = urllib.parse.urlparse(url)
         filename = os.path.basename(parsed_url.path)
-        
+
         # If no filename in URL, generate one
         if not filename or not filename.endswith('.keras'):
             filename = "downloaded_model.keras"
-        
+
         # Get cache directory
         cache_dir = _get_model_cache_dir()
         cached_model_path = os.path.join(cache_dir, filename)
-        
+
         # Check if already cached
         if os.path.exists(cached_model_path):
             print(f"Modello trovato in cache: {cached_model_path}")
             return cached_model_path
-        
+
         # Download the model
         print(f"Downloading model from: {url}")
         urllib.request.urlretrieve(url, cached_model_path)
         print(f"Modello scaricato e salvato in: {cached_model_path}")
-        
+
         return cached_model_path
-        
+
     except Exception as e:
-        raise RuntimeError(f"Errore durante il download del modello da {url}: {str(e)}")
+        raise RuntimeError(
+            f"Errore durante il download del modello da {url}: {str(e)}")
 
 
 def _get_model_cache_dir() -> str:
@@ -498,12 +514,12 @@ def _get_model_cache_dir() -> str:
         home = os.getenv('HOME')
         config_dir = home if home is not None else os.getcwd()
 
-    # Create cache directory  
+    # Create cache directory
     cache_dir = config_dir + sep + 'models' + sep + 'cache'
-    
+
     if not os.path.exists(cache_dir):
         os.makedirs(cache_dir)
-    
+
     return cache_dir
 
 
@@ -610,7 +626,7 @@ def webcam_predict_label(model, camera_index: int = 0, class_names: list = None)
     """
     # Capture image from webcam
     image_path = capture_webcam_image(camera_index)
-    
+
     # Make prediction using the model object
     predicted_class = predict_image_label(model, image_path, class_names)
     return predicted_class
@@ -630,7 +646,7 @@ def webcam_predict_confidence(model, camera_index: int = 0, class_names: list = 
     """
     # Capture image from webcam
     image_path = capture_webcam_image(camera_index)
-    
+
     # Make prediction using the model object
     confidence_score = predict_image_confidence(model, image_path, class_names)
     return confidence_score
@@ -639,7 +655,7 @@ def webcam_predict_confidence(model, camera_index: int = 0, class_names: list = 
 def webcam_predict_label_legacy(model_name: str = "mobilenet_NOME_v1.keras", camera_index: int = 0, class_names: list = None) -> str:
     """
     Legacy function: Capture image from webcam and get only the predicted label.
-    
+
     DEPRECATED: Use webcam_predict_label(model, camera_index, class_names) instead.
     This function loads the model each time, which is inefficient.
 
@@ -658,7 +674,7 @@ def webcam_predict_label_legacy(model_name: str = "mobilenet_NOME_v1.keras", cam
 def webcam_predict_confidence_legacy(model_name: str = "mobilenet_NOME_v1.keras", camera_index: int = 0, class_names: list = None) -> float:
     """
     Legacy function: Capture image from webcam and get only the confidence score.
-    
+
     DEPRECATED: Use webcam_predict_confidence(model, camera_index, class_names) instead.
     This function loads the model each time, which is inefficient.
 
@@ -717,28 +733,35 @@ def send_prediction_data(image_path: str, label: str, confidence: float, api_url
         # Read and encode image as base64
         with open(image_path, 'rb') as image_file:
             image_data = base64.b64encode(image_file.read()).decode('utf-8')
-        
-        # Create JSON payload
+
+        # Create JSON payload (image only as base64, no image_path)
         payload = {
             "image": image_data,
             "label": label,
             "confidence": confidence,
-            "timestamp": datetime.datetime.now().isoformat(),
-            "image_path": os.path.basename(image_path)
+            "timestamp": datetime.datetime.now().isoformat()
         }
-        
+
         # Add additional data if provided
         if additional_data and isinstance(additional_data, dict):
             payload.update(additional_data)
-        
+
+        # Stampa la struttura del JSON che verrà inviato (senza stampare l'immagine base64)
+        payload_preview = payload.copy()
+        if "image" in payload_preview:
+            payload_preview["image"] = payload_preview["image"]  # mostra il base64 reale
+        print("Struttura JSON inviata all'API:")
+        print(json.dumps(payload_preview, indent=2))
+
         # Send POST request
         headers = {
             'Content-Type': 'application/json',
             'User-Agent': 'MAST-Learn-CV-Module/2.0.0'
         }
-        
-        response = requests.post(api_url, json=payload, headers=headers, timeout=30)
-        
+
+        response = requests.post(
+            api_url, json=payload, headers=headers, timeout=30)
+
         # Check response
         if response.status_code == 200:
             print(f"✅ Data sent successfully to {api_url}")
@@ -750,22 +773,22 @@ def send_prediction_data(image_path: str, label: str, confidence: float, api_url
             error_msg = f"❌ API Error {response.status_code}: {response.text}"
             print(error_msg)
             return {"status": "error", "code": response.status_code, "message": response.text}
-            
+
     except requests.exceptions.Timeout:
         error_msg = "❌ Request timeout - API took too long to respond"
         print(error_msg)
         return {"status": "error", "message": "Request timeout"}
-        
+
     except requests.exceptions.ConnectionError:
         error_msg = f"❌ Connection error - Cannot reach {api_url}"
         print(error_msg)
         return {"status": "error", "message": "Connection error"}
-        
+
     except FileNotFoundError:
         error_msg = f"❌ Image file not found: {image_path}"
         print(error_msg)
         return {"status": "error", "message": f"Image file not found: {image_path}"}
-        
+
     except Exception as e:
         error_msg = f"❌ Unexpected error: {str(e)}"
         print(error_msg)
@@ -789,16 +812,17 @@ def webcam_predict_and_send(model, camera_index: int = 0, class_names: list = No
     try:
         # Capture image from webcam
         image_path = capture_webcam_image(camera_index)
-        
+
         # Make predictions
         label = predict_image_label(model, image_path, class_names)
         confidence = predict_image_confidence(model, image_path, class_names)
-        
+
         # Send to API if URL provided
         api_response = None
         if api_url:
-            api_response = send_prediction_data(image_path, label, confidence, api_url, additional_data)
-        
+            api_response = send_prediction_data(
+                image_path, label, confidence, api_url, additional_data)
+
         # Return combined results
         result = {
             "image_path": image_path,
@@ -807,13 +831,13 @@ def webcam_predict_and_send(model, camera_index: int = 0, class_names: list = No
             "api_sent": bool(api_url),
             "api_response": api_response
         }
-        
+
         print(f"Prediction: {label} (confidence: {confidence:.2f})")
         if api_url:
             print(f"API Status: {api_response.get('status', 'unknown')}")
-            
+
         return result
-        
+
     except Exception as e:
         error_result = {
             "status": "error",

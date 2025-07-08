@@ -55,3 +55,6 @@ environment.yaml
 
 # AI assistant specific
 .claude/
+
+# Environment variables
+.venv/
