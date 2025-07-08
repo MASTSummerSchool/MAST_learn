@@ -114,4 +114,19 @@ namespace robot {
         Generator.addCode(`# Useful for debugging .keras file problems`);
     }
 
+    //% block="Convert model format: [INPUT_PATH] to [TARGET_FORMAT]" blockType="reporter"
+    //% INPUT_PATH.shadow="string" INPUT_PATH.defl="'model.keras'"
+    //% TARGET_FORMAT.shadow="string" TARGET_FORMAT.defl="'h5'"
+    export function convert_model_format(parameter: any, block: any) {
+        let input_path = parameter.INPUT_PATH.code;
+        let target_format = parameter.TARGET_FORMAT.code;
+        Generator.addImport(`from learn import convert_model_format`);
+        Generator.addCode(`convert_model_format(${input_path}, target_format=${target_format})`);
+        
+        // Add comments
+        Generator.addCode(`# Converts between .keras, .h5, and saved_model formats`);
+        Generator.addCode(`# Solves compatibility issues between TensorFlow versions`);
+        Generator.addCode(`# Returns path to converted model file`);
+    }
+
 }

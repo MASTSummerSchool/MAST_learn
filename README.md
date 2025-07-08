@@ -32,7 +32,7 @@ Modulo di visione artificiale per la cattura di immagini da webcam e predizione 
 1. Scarica e installa [Mind+ Desktop app](https://mindplus.dfrobot.com)
 2. Inserisci l'URL del progetto: **<https://github.com/lozingaro/MAST_learn>** nell'interfaccia per importare questa libreria
 
-## Blocchi Disponibili (7 Blocchi Totali + Utilità Debug)
+## Blocchi Disponibili (8 Blocchi Totali + Utilità Debug)
 
 ### 🎥 Cattura Webcam
 
