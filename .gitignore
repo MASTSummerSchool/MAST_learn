@@ -52,3 +52,6 @@ environment.yaml
 
 # Mypy cache files
 .mypy_cache/
+
+# AI assistant specific
+.claude/
