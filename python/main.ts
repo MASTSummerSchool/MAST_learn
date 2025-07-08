@@ -78,35 +78,37 @@ namespace robot {
         Generator.addCode(`# Use Mind+ list blocks to create class_names list`);
     }
 
-    //% block="Get label from webcam with model [MODEL_NAME] from camera [CAMERA_INDEX] using classes [CLASS_NAMES]" blockType="reporter"
-    //% MODEL_NAME.shadow="string" MODEL_NAME.defl="'mobilenet_NOME_v1.keras'"
+    //% block="Get label from webcam with model [MODEL] from camera [CAMERA_INDEX] using classes [CLASS_NAMES]" blockType="reporter"
+    //% MODEL.shadow="normal" MODEL.defl="'custom_model'"
     //% CAMERA_INDEX.shadow="math_number" CAMERA_INDEX.defl="0"
     //% CLASS_NAMES.shadow="normal" CLASS_NAMES.defl="'class_list'"
     export function webcam_predict_label(parameter: any, block: any) {
-        let model_name = parameter.MODEL_NAME.code;
+        let model = parameter.MODEL.code;
         let camera_index = parameter.CAMERA_INDEX.code;
         let class_names = parameter.CLASS_NAMES.code;
         Generator.addImport(`from learn import webcam_predict_label`);
-        Generator.addCode(`webcam_predict_label(${model_name}, ${camera_index}, ${class_names})`);
+        Generator.addCode(`webcam_predict_label(${model}, ${camera_index}, ${class_names})`);
         
         // Add comments
         Generator.addCode(`# Capture + predict: returns only label (string)`);
+        Generator.addCode(`# Use pre-loaded model object for efficiency`);
         Generator.addCode(`# Use Mind+ list blocks to create class_names list`);
     }
 
-    //% block="Get confidence from webcam with model [MODEL_NAME] from camera [CAMERA_INDEX] using classes [CLASS_NAMES]" blockType="reporter"
-    //% MODEL_NAME.shadow="string" MODEL_NAME.defl="'mobilenet_NOME_v1.keras'"
+    //% block="Get confidence from webcam with model [MODEL] from camera [CAMERA_INDEX] using classes [CLASS_NAMES]" blockType="reporter"
+    //% MODEL.shadow="normal" MODEL.defl="'custom_model'"
     //% CAMERA_INDEX.shadow="math_number" CAMERA_INDEX.defl="0"
     //% CLASS_NAMES.shadow="normal" CLASS_NAMES.defl="'class_list'"
     export function webcam_predict_confidence(parameter: any, block: any) {
-        let model_name = parameter.MODEL_NAME.code;
+        let model = parameter.MODEL.code;
         let camera_index = parameter.CAMERA_INDEX.code;
         let class_names = parameter.CLASS_NAMES.code;
         Generator.addImport(`from learn import webcam_predict_confidence`);
-        Generator.addCode(`webcam_predict_confidence(${model_name}, ${camera_index}, ${class_names})`);
+        Generator.addCode(`webcam_predict_confidence(${model}, ${camera_index}, ${class_names})`);
         
         // Add comments
         Generator.addCode(`# Capture + predict: returns only confidence (float 0.0-1.0)`);
+        Generator.addCode(`# Use pre-loaded model object for efficiency`);
         Generator.addCode(`# Use Mind+ list blocks to create class_names list`);
     }
 

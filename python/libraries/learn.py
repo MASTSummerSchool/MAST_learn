@@ -297,9 +297,52 @@ def predict_image_confidence(model, image_path: str, class_names: list = None) -
     return confidence_score
 
 
-def webcam_predict_label(model_name: str = "mobilenet_NOME_v1.keras", camera_index: int = 0, class_names: list = None) -> str:
+def webcam_predict_label(model, camera_index: int = 0, class_names: list = None) -> str:
     """
     Capture image from webcam and get only the predicted label.
+
+    Parameters:
+    model: The loaded Keras model object.
+    camera_index (int): Index of the camera to use.
+    class_names (list): List of class names. If None, uses default classes.
+
+    Returns:
+    str: The predicted label.
+    """
+    # Capture image from webcam
+    image_path = capture_webcam_image(camera_index)
+    
+    # Make prediction using the model object
+    predicted_class = predict_image_label(model, image_path, class_names)
+    return predicted_class
+
+
+def webcam_predict_confidence(model, camera_index: int = 0, class_names: list = None) -> float:
+    """
+    Capture image from webcam and get only the confidence score.
+
+    Parameters:
+    model: The loaded Keras model object.
+    camera_index (int): Index of the camera to use.
+    class_names (list): List of class names. If None, uses default classes.
+
+    Returns:
+    float: The confidence score.
+    """
+    # Capture image from webcam
+    image_path = capture_webcam_image(camera_index)
+    
+    # Make prediction using the model object
+    confidence_score = predict_image_confidence(model, image_path, class_names)
+    return confidence_score
+
+
+def webcam_predict_label_legacy(model_name: str = "mobilenet_NOME_v1.keras", camera_index: int = 0, class_names: list = None) -> str:
+    """
+    Legacy function: Capture image from webcam and get only the predicted label.
+    
+    DEPRECATED: Use webcam_predict_label(model, camera_index, class_names) instead.
+    This function loads the model each time, which is inefficient.
 
     Parameters:
     model_name (str): Name of the model file.
@@ -313,9 +356,12 @@ def webcam_predict_label(model_name: str = "mobilenet_NOME_v1.keras", camera_ind
     return predicted_class
 
 
-def webcam_predict_confidence(model_name: str = "mobilenet_NOME_v1.keras", camera_index: int = 0, class_names: list = None) -> float:
+def webcam_predict_confidence_legacy(model_name: str = "mobilenet_NOME_v1.keras", camera_index: int = 0, class_names: list = None) -> float:
     """
-    Capture image from webcam and get only the confidence score.
+    Legacy function: Capture image from webcam and get only the confidence score.
+    
+    DEPRECATED: Use webcam_predict_confidence(model, camera_index, class_names) instead.
+    This function loads the model each time, which is inefficient.
 
     Parameters:
     model_name (str): Name of the model file.
