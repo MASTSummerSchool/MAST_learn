@@ -1,4 +1,3 @@
-# Computer Vision dependencies for webcam capture and custom model inference
-opencv-python>=4.5.0
-keras>=2.8.0
-numpy>=1.20.0
+opencv-python>=4.7.0.72
+keras>=2.15.0
+numpy>=1.24.3

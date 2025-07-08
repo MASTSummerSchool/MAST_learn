@@ -19,31 +19,38 @@ Modulo di visione artificiale per la cattura di immagini da webcam e predizione 
 
 ### 🤖 Modello Custom  
 
-- **`load_custom_model(model_name)`** - Carica un modello Keras personalizzato
-  - `model_name`: Nome del file modello (es. "mobilenet_NOME_v1.keras")
+- **`load_custom_model(model_path)`** - Carica un modello Keras personalizzato da file locale o URL
+  - `model_path`: Nome del file modello o URL (es. "mobilenet_NOME_v1.keras" o "https://github.com/user/repo/raw/main/model.keras")
   - Restituisce: Modello caricato pronto per l'inferenza
-
-### 🏷️ Etichette Custom
-
-- **`create_class_list(class1, class2, ..., class8)`** - Crea lista etichette personalizzate
-  - `class1-8`: Le etichette del tuo modello (in ordine di training)
-  - Restituisce: Lista di etichette da usare per la predizione
+  - ⭐ **Nuovo**: Supporto URL con cache automatica
 
 ### 🔍 Predizione Immagine
 
 - **`predict_image_custom(model, image_path, class_names)`** - Predice oggetto e confidenza da immagine
-  - `model`: Modello caricato con `load_custom_model`
-  - `image_path`: Percorso del file immagine
-  - `class_names`: Lista etichette (opzionale, usa default se None)
   - Restituisce: Tupla (etichetta_predetta, punteggio_confidenza)
 
-### ⚡ Workflow Completo
+- **`predict_image_label(model, image_path, class_names)`** - ⭐ Ottieni solo l'etichetta predetta
+  - Restituisce: Stringa con l'etichetta (es. "gatto")
+
+- **`predict_image_confidence(model, image_path, class_names)`** - ⭐ Ottieni solo il punteggio di confidenza  
+  - Restituisce: Numero decimale 0.0-1.0 (es. 0.87)
+
+### ⚡ Workflow Webcam Completo
 
 - **`webcam_predict(model_name, camera_index, class_names)`** - Cattura + carica modello + predice
-  - `model_name`: Nome del file modello
-  - `camera_index`: Indice della webcam
-  - `class_names`: Lista etichette (opzionale, usa default se None)
   - Restituisce: Tupla (etichetta_predetta, punteggio_confidenza)
+
+- **`webcam_predict_label(model_name, camera_index, class_names)`** - ⭐ Ottieni solo l'etichetta
+  - Restituisce: Stringa con l'etichetta
+
+- **`webcam_predict_confidence(model_name, camera_index, class_names)`** - ⭐ Ottieni solo la confidenza
+  - Restituisce: Numero decimale 0.0-1.0
+
+**Parametri comuni:**
+- `model/model_name`: Modello caricato / Nome del file modello o URL
+- `image_path`: Percorso del file immagine  
+- `camera_index`: Indice della webcam (0 = principale)
+- `class_names`: Lista etichette (usa blocchi lista Mind+, opzionale)
 
 ## Classi Supportate
 
@@ -62,8 +69,10 @@ Il modello custom MobileNet riconosce le seguenti 8 classi di oggetti:
 
 ```
 ~/MAST_learn/
-└── test/
-    └── mobilenet_NOME_v1.keras    # Modello custom
+├── test/
+│   └── mobilenet_NOME_v1.keras    # Modelli locali
+└── models_cache/
+    └── downloaded_model.keras     # Modelli scaricati da URL
 
 ~/webcam_images/
 └── webcam_capture.jpg             # Immagini catturate
@@ -71,13 +80,34 @@ Il modello custom MobileNet riconosce le seguenti 8 classi di oggetti:
 
 ## Esempio d'Uso
 
-### Con Etichette Custom
+### ⭐ Con Blocchi Separati (Raccomandato)
 
 ```python
-# 1. Definisci le tue etichette (nell'ordine del training!)
-mie_etichette = create_class_list("gatto", "cane", "uccello", "pesce", "coniglio", "tartaruga", "hamster", "criceto")
+# 1. Crea lista etichette con blocchi lista Mind+
+mie_etichette = ["gatto", "cane", "uccello", "pesce", "coniglio", "tartaruga", "hamster", "criceto"]
 
-# 2. Cattura e predici con etichette custom
+# 2. Ottieni solo l'etichetta (più facile da usare!)
+# Modello locale
+etichetta = webcam_predict_label("mio_modello_animali.keras", 0, mie_etichette)
+# Modello da URL GitHub
+etichetta = webcam_predict_label("https://github.com/utente/repo/raw/main/animali.keras", 0, mie_etichette)
+print(f"Animale: {etichetta}")
+
+# 3. Ottieni solo la confidenza 
+confidenza = webcam_predict_confidence("mio_modello_animali.keras", 0, mie_etichette)
+print(f"Sicurezza: {confidenza:.1%}")
+
+# 4. Usa in condizioni Mind+
+if etichetta == "gatto":
+    print("Miao!")
+if confidenza > 0.8:
+    print("Predizione molto sicura!")
+```
+
+### Con Etichette Custom (Tupla)
+
+```python
+# Metodo tradizionale (restituisce tupla)
 risultato = webcam_predict("mio_modello_animali.keras", 0, mie_etichette)
 etichetta, confidenza = risultato
 print(f"Animale rilevato: {etichetta} ({confidenza:.2f})")
@@ -98,11 +128,13 @@ print(f"Oggetto: {etichetta} ({confidenza:.2f})")
 # 1. Cattura immagine
 immagine = capture_webcam_image(0)
 
-# 2. Carica modello  
+# 2. Carica modello (locale o da URL)
 modello = load_custom_model("mio_modello.keras")
+# oppure da GitHub:
+# modello = load_custom_model("https://github.com/utente/repo/raw/main/modello.keras")
 
-# 3. Crea etichette custom
-etichette = create_class_list("classe1", "classe2", "classe3", "classe4", "classe5", "classe6", "classe7", "classe8")
+# 3. Crea etichette custom con blocchi lista Mind+
+etichette = ["classe1", "classe2", "classe3", "classe4", "classe5", "classe6", "classe7", "classe8"]
 
 # 4. Predici
 etichetta, confidenza = predict_image_custom(modello, immagine, etichette)

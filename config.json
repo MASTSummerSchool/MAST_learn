@@ -22,8 +22,8 @@
       "dir": "python/",
       "main": "main.ts",
       "dependencies": { 
-        "numpy" : "1.20.0",
-        "opencv-python" : "4.5.0",
+        "numpy" : "1.20.3",
+        "opencv-python" : "4.5.5.64",
         "keras" : "2.8.0"
       }
     }
