@@ -113,11 +113,20 @@ etichette = ["classe1", "classe2", "classe3", "classe4", "classe5", "classe6", "
 
 ## Requisiti Tecnici
 
-- **opencv-python** >= 4.7.0 - Cattura e elaborazione immagini  
-- **tf-nightly** - TensorFlow nightly con Keras 3.10+ integrato (supporta Python 3.13+)
-- **numpy** >= 1.24.0 - Operazioni array
+### Dipendenze Principali
+- **numpy** >= 1.24.3 - Operazioni array e calcoli numerici
+- **opencv-python** >= 4.7.0 - Cattura e elaborazione immagini webcam
+- **tf-nightly** >= 2.20.0 - TensorFlow nightly (supporta Python 3.13+)
+- **keras** >= 3.10.0 - Caricamento modelli e inferenza
 
-⚡ **Nota**: Usa TensorFlow nightly per compatibilità Python 3.13+ con preprocessing MobileNet ottimizzato!
+### Dipendenze TensorFlow (configurate automaticamente)
+- **absl-py**, **astunparse**, **flatbuffers**, **gast**, **google-pasta**
+- **grpcio**, **h5py**, **libclang**, **markdown**, **ml-dtypes**
+- **opt-einsum**, **packaging**, **protobuf**, **requests**, **setuptools**
+- **six**, **tensorboard**, **tensorboard-data-server**, **termcolor**
+- **typing-extensions**, **urllib3**, **werkzeug**, **wrapt**
+
+⚡ **Nota**: Tutte le dipendenze sono configurate manualmente in config.json per evitare problemi con pipreqs!
 
 ## Configurazione Webcam
 
