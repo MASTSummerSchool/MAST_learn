@@ -7,6 +7,7 @@ import urllib.parse
 import requests
 import json
 import base64
+import datetime
 from pathlib import Path
 
 try:
@@ -94,8 +95,9 @@ def capture_webcam_image(camera_index: int = 0) -> str:
     # Release the camera
     cap.release()
 
-    # Save the captured image temporarily
-    temp_path = compose_path("webcam_capture", ".jpg")
+    # Save the captured image with unique timestamp
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]  # Include milliseconds
+    temp_path = compose_path(f"webcam_capture_{timestamp}", ".jpg")
     cv2.imwrite(temp_path, frame)
 
     print(f"Immagine catturata e salvata in: {temp_path}")
@@ -153,7 +155,7 @@ def _get_local_model_path(model_name: str) -> str:
         config_dir = home if home is not None else os.getcwd()
 
     # Create the model directory path
-    model_dir = config_dir + sep + 'MAST_learn' + sep + 'test'
+    model_dir = config_dir + sep + 'models'
     
     # Create directory if it doesn't exist
     if not os.path.exists(model_dir):
@@ -208,8 +210,8 @@ def _get_model_cache_dir() -> str:
         home = os.getenv('HOME')
         config_dir = home if home is not None else os.getcwd()
 
-    # Create cache directory
-    cache_dir = config_dir + sep + 'MAST_learn' + sep + 'models_cache'
+    # Create cache directory  
+    cache_dir = config_dir + sep + 'models' + sep + 'cache'
     
     if not os.path.exists(cache_dir):
         os.makedirs(cache_dir)
@@ -433,7 +435,7 @@ def send_prediction_data(image_path: str, label: str, confidence: float, api_url
             "image": image_data,
             "label": label,
             "confidence": confidence,
-            "timestamp": __import__('datetime').datetime.now().isoformat(),
+            "timestamp": datetime.datetime.now().isoformat(),
             "image_path": os.path.basename(image_path)
         }
         

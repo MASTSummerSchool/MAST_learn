@@ -24,9 +24,9 @@ namespace robot {
 
         // Add comments
         Generator.addCode(`# This block loads a custom trained model from:`);
-        Generator.addCode(`# Local files: ~/MAST_learn/test/model.keras`);
+        Generator.addCode(`# Local files: ~/models/model.keras`);
         Generator.addCode(`# URLs: https://github.com/user/repo/raw/main/model.keras`);
-        Generator.addCode(`# Downloaded models cached in: ~/MAST_learn/models_cache/`);
+        Generator.addCode(`# Downloaded models cached in: ~/models/cache/`);
     }
 
     //% block="Get label from webcam with model [MODEL] from camera [CAMERA_INDEX] using classes [CLASS_NAMES]" blockType="reporter"

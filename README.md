@@ -1,6 +1,29 @@
 # Computer Vision Module for MAST Summer School
 
-## Descrizione
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Mind+](https://img.shields.io/badge/Mind+-Compatible-green.svg)](https://mindplus.dfrobot.com)
+[![TensorFlow 2.11](https://img.shields.io/badge/TensorFlow-2.11-orange.svg)](https://tensorflow.org)
+[![Educational](https://img.shields.io/badge/Purpose-Educational-purple.svg)](https://github.com/lozingaro/MAST_learn)
+
+## 📋 Table of Contents
+
+- [Description](#description)
+- [Installation](#installation)
+- [Available Blocks](#available-blocks)
+- [Supported Classes](#supported-classes)
+- [File Structure](#file-structure)
+- [Usage Examples](#usage-examples)
+- [Technical Requirements](#technical-requirements)
+- [API JSON Format](#api-json-format)
+- [Webcam Configuration](#webcam-configuration)
+- [Why Use Model Objects](#why-use-model-objects)
+- [Educational Activities](#educational-activities)
+- [Version](#version)
+- [Contributing](#contributing)
+- [License](#license)
+
+## 📖 Description
 
 Modulo di visione artificiale per la cattura di immagini da webcam e predizione di oggetti utilizzando modelli MobileNet custom. Progettato per attività didattiche di intelligenza artificiale e computer vision.
 
@@ -66,14 +89,15 @@ Il modello custom MobileNet riconosce le seguenti 8 classi di oggetti:
 ## Struttura File
 
 ```
-~/MAST_learn/
-├── test/
-│   └── mobilenet_NOME_v1.keras    # Modelli locali
-└── models_cache/
+~/models/
+├── mobilenet_NOME_v1.keras        # Modelli locali
+└── cache/
     └── downloaded_model.keras     # Modelli scaricati da URL
 
 ~/webcam_images/
-└── webcam_capture.jpg             # Immagini catturate
+├── webcam_capture_20250108_143025_123.jpg  # Immagini catturate con timestamp
+├── webcam_capture_20250108_143030_456.jpg  # Non sovrascrive immagini precedenti
+└── ...
 ```
 
 ## Esempio d'Uso
@@ -255,4 +279,36 @@ etichetta3 = webcam_predict_label(modello, 0, classi)         # Usa subito
 
 ## Versione
 
-**v2.1.1** - Modulo Computer Vision ottimizzato per Mind+ Python 3.8.5: 6 blocchi con API REST e dipendenze compatibili
+**v2.1.2** - Modulo Computer Vision con organizzazione migliorata: gestione file ottimizzata, documentazione completa e repository standards
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+### Quick Start for Contributors
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+### Educational Use
+This software is developed for educational purposes as part of the MAST (Machine Learning, Artificial Intelligence, Statistics) Summer School program at the University of Bologna.
+
+## 📧 Contact
+
+- **Author**: Stefano Zingaro
+- **Email**: stefano.zingaro@unibo.it
+- **Institution**: University of Bologna
+- **Project**: MAST Summer School
+
+## 🙏 Acknowledgments
+
+- University of Bologna MAST Summer School Program
+- Mind+ Development Team for the visual programming platform
+- TensorFlow and OpenCV communities for robust ML and CV libraries
+- All students and educators who provide feedback to improve this educational tool
