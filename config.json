@@ -3,7 +3,7 @@
     "en": "Learn Module @MAST"
   },
   "description": {
-    "en": "Computer Vision blocks with API REST integration: webcam capture, model loading, prediction and JSON data transmission"
+    "en": "Computer Vision blocks with automatic .keras→.h5 conversion: webcam capture, model loading, prediction and API REST integration"
   },
   "author": "Stefano Zingaro",
   "email": "stefano.zingaro@unibo.it",
@@ -16,7 +16,7 @@
     "web",
     "linux"
   ],
-  "version": "2.1.2",
+  "version": "2.2.0",
   "asset": {
     "python": {
       "dir": "python/",

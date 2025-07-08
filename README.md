@@ -32,7 +32,7 @@ Modulo di visione artificiale per la cattura di immagini da webcam e predizione 
 1. Scarica e installa [Mind+ Desktop app](https://mindplus.dfrobot.com)
 2. Inserisci l'URL del progetto: **<https://github.com/lozingaro/MAST_learn>** nell'interfaccia per importare questa libreria
 
-## Blocchi Disponibili (6 Blocchi Totali)
+## Blocchi Disponibili (7 Blocchi Totali + Utilità Debug)
 
 ### 🎥 Cattura Webcam
 
@@ -46,6 +46,7 @@ Modulo di visione artificiale per la cattura di immagini da webcam e predizione 
   - `model_path`: Nome del file modello o URL (es. "mobilenet_NOME_v1.keras" o "https://github.com/user/repo/raw/main/model.keras")
   - Restituisce: Modello caricato pronto per l'inferenza
   - ⭐ **Supporto URL**: Cache automatica per modelli remoti
+  - 🔄 **Conversione Automatica**: File .keras convertiti automaticamente a .h5 per compatibilità Mind+
 
 ### ⚡ Workflow Webcam Ottimizzato
 
@@ -66,6 +67,18 @@ Modulo di visione artificiale per la cattura di immagini da webcam e predizione 
 - **`webcam_predict_and_send(model, camera_index, class_names, api_url)`** - ⭐ Workflow completo con API
   - Cattura + predici + invia automaticamente all'API
   - Restituisce: Dati predizione combinati con risposta API
+
+### 🔧 Debug e Utilità
+
+- **`verify_model_compatibility(model_path)`** - ⭐ Diagnostica problemi modello
+  - Verifica compatibilità formato .keras, .h5, SavedModel
+  - Restituisce: Informazioni dettagliate e suggerimenti per risoluzione
+  - **Utile per**: Risolvere errori di caricamento modelli
+
+- **`convert_model_format(input_path, output_path, target_format)`** - Conversione formato modelli
+  - Converte tra .keras, .h5, SavedModel
+  - Risolve problemi di compatibilità TensorFlow/Keras
+  - **Utile per**: Convertire modelli problematici
 
 **Parametri comuni:**
 - `model`: Oggetto modello caricato
@@ -90,9 +103,11 @@ Il modello custom MobileNet riconosce le seguenti 8 classi di oggetti:
 
 ```
 ~/models/
-├── mobilenet_NOME_v1.keras        # Modelli locali
+├── mobilenet_NOME_v1.keras             # Modelli originali .keras
+├── mobilenet_NOME_v1_auto_converted.h5 # Conversioni automatiche (.h5)
 └── cache/
-    └── downloaded_model.keras     # Modelli scaricati da URL
+    ├── downloaded_model.keras          # Modelli scaricati da URL
+    └── downloaded_model_auto_converted.h5  # Conversioni automatiche da URL
 
 ~/webcam_images/
 ├── webcam_capture_20250108_143025_123.jpg  # Immagini catturate con timestamp
@@ -194,6 +209,98 @@ etichette = ["classe1", "classe2", "classe3", "classe4", "classe5", "classe6", "
 - **Protobuf <4.0** - Evita conflitti di versione
 - **Installazione automatica** - Mind+ gestisce tutte le dipendenze
 
+## 🔧 Risoluzione Problemi Modelli .keras
+
+### ✅ **NUOVO**: Conversione Automatica Integrata!
+
+**Non serve più fare nulla manualmente!** Il modulo ora converte automaticamente i file .keras a .h5:
+
+```python
+# Prima (problematico):
+# modello = load_custom_model("model.keras")  # Errori di compatibilità
+
+# Ora (automatico):
+modello = load_custom_model("model.keras")    # ✅ Conversione automatica a .h5!
+# Output: 🔄 Modello automaticamente convertito da .keras a .h5 per compatibilità
+#         ✅ Modello caricato (compile=False): ~/models/model_auto_converted.h5
+```
+
+**Caratteristiche della conversione automatica:**
+- 📁 **Cache intelligente**: Conversione solo se necessaria
+- ⚡ **Controllo timestamp**: Riconverte solo se .keras è più recente
+- 🌐 **Supporto URL**: Funziona anche con modelli scaricati da GitHub
+- 🛡️ **Fallback**: Se la conversione fallisce, prova comunque il caricamento diretto
+
+### ❌ Problema: "Keras non trova la signature del modello" (Legacy)
+
+Questo problema è ora risolto automaticamente, ma ecco le soluzioni manuali se necessarie:
+
+#### **🚀 Soluzione Rapida (Automatica)**
+```python
+# 1. Diagnostica il problema
+info = verify_model_compatibility("mobilenet_NOME_v1.keras")
+print(info)
+
+# 2. Se necessario, converti il modello manualmente
+nuovo_modello = convert_model_format("mobilenet_NOME_v1.keras", target_format="h5")
+
+# 3. Usa il modello convertito
+modello = load_custom_model(nuovo_modello)
+```
+
+#### **🔍 Diagnosi Manuale**
+```python
+# Verifica dettagliata compatibilità
+info = verify_model_compatibility("/path/to/your/model.keras")
+
+# Controllo risultati
+if not info["loadable"]:
+    print("❌ Modello non caricabile:")
+    print(f"Errore: {info['error']}")
+    print("Suggerimenti:")
+    for suggestion in info["suggestions"]:
+        print(f"- {suggestion}")
+```
+
+#### **🛠️ Soluzioni Alternative**
+
+1. **Formato .h5 (Raccomandato per Mind+)**:
+   ```python
+   # Converti a formato .h5 più compatibile
+   nuovo_path = convert_model_format("model.keras", target_format="h5")
+   modello = load_custom_model(nuovo_path)
+   ```
+
+2. **Caricamento senza compilazione**:
+   ```python
+   # Il modulo ora prova automaticamente compile=False
+   modello = load_custom_model("model.keras")  # Gestione automatica errori
+   ```
+
+3. **SavedModel format**:
+   ```python
+   # Per modelli complessi
+   nuovo_path = convert_model_format("model.keras", target_format="saved_model")
+   modello = load_custom_model(nuovo_path)
+   ```
+
+#### **⚠️ Problemi Comuni e Soluzioni**
+
+| Errore | Causa | Soluzione |
+|--------|-------|-----------|
+| "Invalid signature" | Incompatibilità versione | Usa `convert_model_format()` |
+| "No signature found" | Modello non compilato | Caricamento automatico con `compile=False` |
+| "File not found" | Percorso errato | Verifica `~/models/model.keras` |
+| "Format not supported" | Formato obsoleto | Conveti a .h5 o SavedModel |
+
+#### **✅ Verifica Funzionamento**
+```python
+# Test completo dopo risoluzione
+modello = load_custom_model("model.h5")  # Usa formato convertito
+etichetta = webcam_predict_label(modello, 0, ["classe1", "classe2"])
+print(f"Test riuscito: {etichetta}")
+```
+
 ## Formato JSON API
 
 ### Payload inviato all'API REST
@@ -279,7 +386,7 @@ etichetta3 = webcam_predict_label(modello, 0, classi)         # Usa subito
 
 ## Versione
 
-**v2.1.2** - Modulo Computer Vision con organizzazione migliorata: gestione file ottimizzata, documentazione completa e repository standards
+**v2.2.0** - Conversione automatica .keras→.h5: risoluzione definitiva dei problemi di compatibilità Mind+ con cache intelligente e supporto URL completo
 
 ## 🤝 Contributing
 

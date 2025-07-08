@@ -101,4 +101,17 @@ namespace robot {
         Generator.addCode(`# Automatic error handling and status reporting`);
     }
 
+    //% block="Verify model compatibility [MODEL_PATH]" blockType="reporter"
+    //% MODEL_PATH.shadow="string" MODEL_PATH.defl="'model.keras'"
+    export function verify_model_compatibility(parameter: any, block: any) {
+        let model_path = parameter.MODEL_PATH.code;
+        Generator.addImport(`from learn import verify_model_compatibility`);
+        Generator.addCode(`verify_model_compatibility(${model_path})`);
+        
+        // Add comments
+        Generator.addCode(`# Diagnoses model loading issues and compatibility`);
+        Generator.addCode(`# Returns detailed information about the model file`);
+        Generator.addCode(`# Useful for debugging .keras file problems`);
+    }
+
 }

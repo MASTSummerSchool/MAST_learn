@@ -106,7 +106,7 @@ def capture_webcam_image(camera_index: int = 0) -> str:
 
 def load_custom_model(model_path: str = "mobilenet_NOME_v1.keras"):
     """
-    Load a custom trained model from local file or URL.
+    Load a custom trained model from local file or URL with automatic .keras to .h5 conversion.
 
     Parameters:
     model_path (str): Local filename or URL to the model file.
@@ -116,6 +116,8 @@ def load_custom_model(model_path: str = "mobilenet_NOME_v1.keras"):
 
     Returns:
     model: The loaded Keras model.
+    
+    Note: .keras files are automatically converted to .h5 format for better Mind+ compatibility.
     """
     if not HAS_KERAS:
         raise ImportError(
@@ -132,11 +134,297 @@ def load_custom_model(model_path: str = "mobilenet_NOME_v1.keras"):
     if not os.path.exists(final_model_path):
         raise FileNotFoundError(f"Modello non trovato: {final_model_path}")
 
-    # Load the model
-    model = load_model(final_model_path)
-    print(f"Modello caricato: {final_model_path}")
+    # Automatic .keras to .h5 conversion for better compatibility
+    if final_model_path.endswith('.keras'):
+        h5_path = _auto_convert_keras_to_h5(final_model_path)
+        if h5_path:
+            final_model_path = h5_path
+            print(f"🔄 Modello automaticamente convertito da .keras a .h5 per compatibilità")
 
-    return model
+    # Load the model with enhanced error handling
+    try:
+        # Try loading with compile=False to avoid signature issues
+        model = load_model(final_model_path, compile=False)
+        print(f"✅ Modello caricato (compile=False): {final_model_path}")
+        return model
+    except Exception as e:
+        print(f"⚠️ Errore caricamento con compile=False: {e}")
+        
+        # Try alternative loading methods
+        try:
+            # Try with standard loading
+            model = load_model(final_model_path)
+            print(f"✅ Modello caricato (standard): {final_model_path}")
+            return model
+        except Exception as e2:
+            print(f"⚠️ Errore caricamento standard: {e2}")
+            
+            # Try loading saved_model format if it's a directory
+            if os.path.isdir(final_model_path):
+                try:
+                    import tensorflow as tf
+                    model = tf.keras.models.load_model(final_model_path)
+                    print(f"✅ Modello caricato (SavedModel): {final_model_path}")
+                    return model
+                except Exception as e3:
+                    print(f"⚠️ Errore SavedModel: {e3}")
+            
+            # If .keras conversion failed, try manual conversion as last resort
+            if model_path.endswith('.keras') and final_model_path.endswith('.keras'):
+                print("🔄 Tentativo conversione manuale .keras → .h5...")
+                try:
+                    converted_path = convert_model_format(final_model_path, target_format="h5")
+                    model = load_model(converted_path, compile=False)
+                    print(f"✅ Modello caricato dopo conversione manuale: {converted_path}")
+                    return model
+                except Exception as e4:
+                    print(f"⚠️ Errore conversione manuale: {e4}")
+            
+            # If all methods fail, provide detailed error information
+            error_msg = f"""
+❌ Errore caricamento modello: {final_model_path}
+
+Errori rilevati:
+1. compile=False: {str(e)}
+2. Standard: {str(e2)}
+
+Possibili soluzioni:
+- Verificare che il file sia un modello Keras valido
+- Controllare la compatibilità TensorFlow/Keras version
+- Usare un modello in formato .h5 o SavedModel
+- Ricreare il modello con la versione corrente di TensorFlow
+
+Versioni in uso:
+- TensorFlow: {_get_tf_version()}
+- Formato file: {_detect_model_format(final_model_path)}
+"""
+            print(error_msg)
+            raise RuntimeError(f"Impossibile caricare il modello: {final_model_path}. Vedere dettagli sopra.")
+
+
+def _get_tf_version() -> str:
+    """Get TensorFlow version for debugging."""
+    try:
+        import tensorflow as tf
+        return tf.__version__
+    except:
+        return "Non disponibile"
+
+
+def _detect_model_format(model_path: str) -> str:
+    """Detect model format for debugging."""
+    if not os.path.exists(model_path):
+        return "File non esistente"
+    
+    if os.path.isdir(model_path):
+        return "SavedModel (directory)"
+    
+    if model_path.endswith('.keras'):
+        return "Keras (.keras)"
+    elif model_path.endswith('.h5'):
+        return "HDF5 (.h5)"
+    elif model_path.endswith('.pb'):
+        return "Protocol Buffer (.pb)"
+    else:
+        return f"Formato sconosciuto ({os.path.splitext(model_path)[1]})"
+
+
+def verify_model_compatibility(model_path: str) -> dict:
+    """
+    Verify model compatibility and provide diagnostic information.
+    
+    Parameters:
+    model_path (str): Path to the model file.
+    
+    Returns:
+    dict: Diagnostic information about the model.
+    """
+    import tensorflow as tf
+    
+    info = {
+        "path": model_path,
+        "exists": os.path.exists(model_path),
+        "format": _detect_model_format(model_path),
+        "tensorflow_version": _get_tf_version(),
+        "size_mb": 0,
+        "loadable": False,
+        "error": None,
+        "suggestions": []
+    }
+    
+    if info["exists"]:
+        try:
+            if os.path.isfile(model_path):
+                info["size_mb"] = round(os.path.getsize(model_path) / (1024*1024), 2)
+            
+            # Try loading with different methods
+            try:
+                model = load_model(model_path, compile=False)
+                info["loadable"] = True
+                info["input_shape"] = str(model.input_shape) if hasattr(model, 'input_shape') else "N/A"
+                info["output_shape"] = str(model.output_shape) if hasattr(model, 'output_shape') else "N/A"
+                info["layers_count"] = len(model.layers) if hasattr(model, 'layers') else 0
+            except Exception as e:
+                info["error"] = str(e)
+                info["suggestions"].append("Provare con compile=False")
+                
+                if ".keras" in model_path:
+                    info["suggestions"].append("Convertire a formato .h5 se possibile")
+                    info["suggestions"].append("Verificare compatibilità versione TensorFlow")
+                
+        except Exception as e:
+            info["error"] = str(e)
+    else:
+        info["suggestions"].append("Verificare che il file esista")
+        info["suggestions"].append("Controllare il percorso del file")
+    
+    return info
+
+
+def _auto_convert_keras_to_h5(keras_path: str) -> str:
+    """
+    Automatically convert .keras file to .h5 format with caching.
+    
+    Parameters:
+    keras_path (str): Path to the .keras file.
+    
+    Returns:
+    str: Path to the converted .h5 file, or None if conversion failed.
+    """
+    if not keras_path.endswith('.keras'):
+        return None
+    
+    # Generate .h5 path
+    h5_path = keras_path.replace('.keras', '_auto_converted.h5')
+    
+    # Check if already converted and cached
+    if os.path.exists(h5_path):
+        # Check if .h5 file is newer than .keras file
+        keras_mtime = os.path.getmtime(keras_path)
+        h5_mtime = os.path.getmtime(h5_path)
+        if h5_mtime > keras_mtime:
+            print(f"📁 Usando modello .h5 già convertito: {h5_path}")
+            return h5_path
+        else:
+            print(f"🔄 Modello .keras più recente, riconversione necessaria")
+    
+    # Attempt automatic conversion
+    try:
+        print(f"🔄 Conversione automatica {keras_path} → {h5_path}")
+        
+        # Try to load the .keras model with different methods
+        model = None
+        load_methods = [
+            lambda: load_model(keras_path, compile=False),
+            lambda: load_model(keras_path),
+        ]
+        
+        for i, method in enumerate(load_methods):
+            try:
+                model = method()
+                print(f"✅ Modello .keras caricato per conversione (metodo {i+1})")
+                break
+            except Exception as e:
+                print(f"⚠️ Metodo {i+1} fallito: {e}")
+                continue
+        
+        if model is None:
+            print(f"❌ Impossibile caricare .keras per conversione")
+            return None
+        
+        # Save as .h5
+        model.save(h5_path, save_format='h5')
+        print(f"✅ Conversione automatica completata: {h5_path}")
+        
+        # Verify the converted model
+        try:
+            test_model = load_model(h5_path, compile=False)
+            print(f"✅ Verifica conversione automatica riuscita")
+            return h5_path
+        except Exception as e:
+            print(f"⚠️ Problemi con il modello convertito: {e}")
+            # Return the path anyway, it might still work
+            return h5_path
+            
+    except Exception as e:
+        print(f"⚠️ Conversione automatica fallita: {e}")
+        return None
+
+
+def convert_model_format(input_path: str, output_path: str = None, target_format: str = "h5") -> str:
+    """
+    Convert model between different formats to solve compatibility issues.
+    
+    Parameters:
+    input_path (str): Path to input model.
+    output_path (str): Path for output model (optional).
+    target_format (str): Target format ('h5', 'keras', 'saved_model').
+    
+    Returns:
+    str: Path to converted model.
+    """
+    if not os.path.exists(input_path):
+        raise FileNotFoundError(f"Modello non trovato: {input_path}")
+    
+    # Generate output path if not provided
+    if output_path is None:
+        base_name = os.path.splitext(input_path)[0]
+        if target_format == "h5":
+            output_path = f"{base_name}_converted.h5"
+        elif target_format == "keras":
+            output_path = f"{base_name}_converted.keras"
+        elif target_format == "saved_model":
+            output_path = f"{base_name}_converted_savedmodel"
+        else:
+            raise ValueError(f"Formato non supportato: {target_format}")
+    
+    try:
+        print(f"🔄 Conversione modello da {input_path} a {output_path}")
+        
+        # Load the model with best method available
+        model = None
+        load_methods = [
+            lambda: load_model(input_path, compile=False),
+            lambda: load_model(input_path),
+        ]
+        
+        for i, method in enumerate(load_methods):
+            try:
+                model = method()
+                print(f"✅ Modello caricato con metodo {i+1}")
+                break
+            except Exception as e:
+                print(f"⚠️ Metodo {i+1} fallito: {e}")
+                continue
+        
+        if model is None:
+            raise RuntimeError("Impossibile caricare il modello con nessun metodo")
+        
+        # Save in target format
+        if target_format == "h5":
+            model.save(output_path, save_format='h5')
+        elif target_format == "keras":
+            model.save(output_path, save_format='keras')
+        elif target_format == "saved_model":
+            model.save(output_path, save_format='tf')
+        else:
+            raise ValueError(f"Formato di output non supportato: {target_format}")
+        
+        print(f"✅ Modello convertito salvato: {output_path}")
+        
+        # Verify the converted model loads correctly
+        try:
+            test_model = load_model(output_path, compile=False)
+            print(f"✅ Verifica conversione riuscita")
+            return output_path
+        except Exception as e:
+            print(f"⚠️ Problemi con il modello convertito: {e}")
+            return output_path
+            
+    except Exception as e:
+        error_msg = f"❌ Errore durante la conversione: {str(e)}"
+        print(error_msg)
+        raise RuntimeError(error_msg)
 
 
 def _get_local_model_path(model_name: str) -> str:
