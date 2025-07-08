@@ -10,12 +10,18 @@ import base64
 from pathlib import Path
 
 try:
-    from keras.models import load_model
-    from keras.preprocessing.image import img_to_array
-    import keras.applications.mobilenet_v3
+    from tensorflow.keras.models import load_model
+    from tensorflow.keras.preprocessing.image import img_to_array
+    from tensorflow.keras.applications.mobilenet_v3 import preprocess_input
     HAS_KERAS = True
 except ImportError:
-    HAS_KERAS = False
+    try:
+        from keras.models import load_model
+        from keras.preprocessing.image import img_to_array
+        from keras.applications.mobilenet_v3 import preprocess_input
+        HAS_KERAS = True
+    except ImportError:
+        HAS_KERAS = False
 
 
 def compose_path(filename: str, file_ext: str = '.jpg') -> str:
@@ -252,7 +258,7 @@ def predict_image_custom(model, image_path: str, class_names: list = None):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
     img_array = img_to_array(image)
     img_array = np.expand_dims(img_array, axis=0)
-    img_array = keras.applications.mobilenet_v3.preprocess_input(img_array)
+    img_array = preprocess_input(img_array)
 
     # Make prediction
     predictions = model.predict(img_array)

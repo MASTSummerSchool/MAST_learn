@@ -148,20 +148,27 @@ etichette = ["classe1", "classe2", "classe3", "classe4", "classe5", "classe6", "
 
 ## Requisiti Tecnici
 
-### Dipendenze Principali
-- **numpy** >= 1.24.3 - Operazioni array e calcoli numerici
-- **opencv-python** >= 4.7.0 - Cattura e elaborazione immagini webcam
-- **tf-nightly** >= 2.20.0 - TensorFlow nightly (supporta Python 3.13+)
-- **keras** >= 3.10.0 - Caricamento modelli e inferenza
+### Dipendenze Principali (Python 3.8+ compatibili)
+- **numpy** >= 1.19.5 - Operazioni array e calcoli numerici
+- **opencv-python** >= 4.5.0 - Cattura e elaborazione immagini webcam
+- **tensorflow** >= 2.8.0, <2.16.0 - TensorFlow compatibile con Python 3.8
+- **keras** >= 2.8.0, <3.0.0 - Caricamento modelli e inferenza (TF.Keras)
 
-### Dipendenze TensorFlow (configurate automaticamente)
-- **absl-py**, **astunparse**, **flatbuffers**, **gast**, **google-pasta**
-- **grpcio**, **h5py**, **libclang**, **markdown**, **ml-dtypes**
-- **opt-einsum**, **packaging**, **protobuf**, **requests**, **setuptools**
-- **six**, **tensorboard**, **tensorboard-data-server**, **termcolor**
-- **typing-extensions**, **urllib3**, **werkzeug**, **wrapt**
+### Dipendenze di Supporto
+- **requests** >= 2.25.0 - Comunicazioni HTTP per API REST
+- **h5py** >= 3.1.0 - Lettura/scrittura file modelli HDF5
+- **six** >= 1.15.0 - Compatibilità Python 2/3
+- **protobuf** >= 3.19.0, <4.0.0 - Serializzazione dati TensorFlow
+- **typing-extensions** >= 3.7.4 - Supporto type hints
 
-⚡ **Nota**: Tutte le dipendenze sono configurate manualmente in config.json per evitare problemi con pipreqs!
+⚡ **Nota**: Dipendenze ottimizzate per Mind+ Python 3.8.5 - configurazione manuale completa!
+
+### 🎯 Compatibilità Mind+
+- **Python 3.8.5** - Versione target per ambiente Mind+
+- **TensorFlow 2.11.1** - Stabile e compatibile con Python 3.8
+- **Keras 2.11.0** - Integrato in TensorFlow (tensorflow.keras)
+- **Protobuf <4.0** - Evita conflitti di versione
+- **Installazione automatica** - Mind+ gestisce tutte le dipendenze
 
 ## Formato JSON API
 
@@ -248,4 +255,4 @@ etichetta3 = webcam_predict_label(modello, 0, classi)         # Usa subito
 
 ## Versione
 
-**v2.1.0** - Modulo Computer Vision con API REST integration: 6 blocchi totali includendo invio dati predizione via JSON
+**v2.1.1** - Modulo Computer Vision ottimizzato per Mind+ Python 3.8.5: 6 blocchi con API REST e dipendenze compatibili
