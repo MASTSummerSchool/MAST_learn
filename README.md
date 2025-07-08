@@ -9,7 +9,7 @@ Modulo di visione artificiale per la cattura di immagini da webcam e predizione 
 1. Scarica e installa [Mind+ Desktop app](https://mindplus.dfrobot.com)
 2. Inserisci l'URL del progetto: **<https://github.com/lozingaro/MAST_learn>** nell'interfaccia per importare questa libreria
 
-## Blocchi Disponibili (4 Blocchi Essenziali)
+## Blocchi Disponibili (6 Blocchi Totali)
 
 ### 🎥 Cattura Webcam
 
@@ -34,10 +34,21 @@ Modulo di visione artificiale per la cattura di immagini da webcam e predizione 
   - Usa oggetto model precaricato (più efficiente!)
   - Restituisce: Numero decimale 0.0-1.0
 
+### 🌐 API REST Integration
+
+- **`send_prediction_data(image_path, label, confidence, api_url)`** - ⭐ Invia dati predizione via REST API
+  - Codifica immagine in base64 e crea JSON con timestamp
+  - Restituisce: Risposta API o informazioni errore
+
+- **`webcam_predict_and_send(model, camera_index, class_names, api_url)`** - ⭐ Workflow completo con API
+  - Cattura + predici + invia automaticamente all'API
+  - Restituisce: Dati predizione combinati con risposta API
+
 **Parametri comuni:**
 - `model`: Oggetto modello caricato
 - `camera_index`: Indice della webcam (0 = principale)
 - `class_names`: Lista etichette (usa blocchi lista Mind+, opzionale)
+- `api_url`: URL endpoint REST API (es. "https://api.example.com/predictions")
 
 ## Classi Supportate
 
@@ -67,7 +78,7 @@ Il modello custom MobileNet riconosce le seguenti 8 classi di oggetti:
 
 ## Esempio d'Uso
 
-### ⭐ Workflow Semplificato (4 Blocchi)
+### ⭐ Workflow Semplificato (Predizione Base)
 
 ```python
 # 1. Crea lista etichette con blocchi lista Mind+
@@ -91,6 +102,30 @@ if etichetta == "gatto":
     print("Miao!")
 if confidenza > 0.8:
     print("Predizione molto sicura!")
+```
+
+### 🌐 Workflow con API REST (Nuovo!)
+
+```python
+# 1. Setup modello e classi
+mie_etichette = ["gatto", "cane", "uccello", "pesce", "coniglio", "tartaruga", "hamster", "criceto"]
+modello = load_custom_model("mio_modello_animali.keras")
+
+# 2. Workflow completo con invio automatico API
+api_url = "https://mia-api.com/predictions"
+risultato = webcam_predict_and_send(modello, 0, mie_etichette, api_url)
+
+print(f"Predizione: {risultato['label']} ({risultato['confidence']:.2f})")
+print(f"API Status: {risultato['api_response']['status']}")
+
+# 3. Oppure invio manuale separato
+immagine = capture_webcam_image(0)
+etichetta = webcam_predict_label(modello, 0, mie_etichette)
+confidenza = webcam_predict_confidence(modello, 0, mie_etichette)
+
+# Invia dati all'API
+api_response = send_prediction_data(immagine, etichetta, confidenza, api_url)
+print(f"API Response: {api_response}")
 ```
 
 ### Workflow Manuale (Separato)
@@ -127,6 +162,50 @@ etichette = ["classe1", "classe2", "classe3", "classe4", "classe5", "classe6", "
 - **typing-extensions**, **urllib3**, **werkzeug**, **wrapt**
 
 ⚡ **Nota**: Tutte le dipendenze sono configurate manualmente in config.json per evitare problemi con pipreqs!
+
+## Formato JSON API
+
+### Payload inviato all'API REST
+
+```json
+{
+  "image": "base64_encoded_image_data...",
+  "label": "gatto",
+  "confidence": 0.94,
+  "timestamp": "2025-01-08T14:30:15.123456",
+  "image_path": "webcam_capture.jpg"
+}
+```
+
+### Headers HTTP automatici
+
+```http
+Content-Type: application/json
+User-Agent: MAST-Learn-CV-Module/2.0.0
+```
+
+### Gestione errori automatica
+
+```json
+// Successo (200 OK)
+{
+  "status": "success",
+  "message": "Data received successfully",
+  "id": "prediction-12345"
+}
+
+// Errore di connessione
+{
+  "status": "error",
+  "message": "Connection error"
+}
+
+// Timeout API
+{
+  "status": "error", 
+  "message": "Request timeout"
+}
+```
 
 ## Configurazione Webcam
 
@@ -169,4 +248,4 @@ etichetta3 = webcam_predict_label(modello, 0, classi)         # Usa subito
 
 ## Versione
 
-**v2.0.0** - Modulo Computer Vision semplificato con 4 blocchi essenziali: cattura webcam, carica modello, predici label e confidence
+**v2.1.0** - Modulo Computer Vision con API REST integration: 6 blocchi totali includendo invio dati predizione via JSON

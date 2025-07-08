@@ -4,6 +4,9 @@ import cv2
 import numpy as np
 import urllib.request
 import urllib.parse
+import requests
+import json
+import base64
 from pathlib import Path
 
 try:
@@ -400,6 +403,132 @@ def webcam_predict(model_name: str = "mobilenet_NOME_v1.keras", camera_index: in
     return predicted_class, confidence_score
 
 
+def send_prediction_data(image_path: str, label: str, confidence: float, api_url: str, additional_data: dict = None) -> dict:
+    """
+    Send prediction data via REST API.
+
+    Parameters:
+    image_path (str): Path to the image file.
+    label (str): Predicted label.
+    confidence (float): Confidence score (0.0-1.0).
+    api_url (str): URL of the REST API endpoint.
+    additional_data (dict): Optional additional data to include in JSON.
+
+    Returns:
+    dict: API response or error information.
+    """
+    try:
+        # Read and encode image as base64
+        with open(image_path, 'rb') as image_file:
+            image_data = base64.b64encode(image_file.read()).decode('utf-8')
+        
+        # Create JSON payload
+        payload = {
+            "image": image_data,
+            "label": label,
+            "confidence": confidence,
+            "timestamp": __import__('datetime').datetime.now().isoformat(),
+            "image_path": os.path.basename(image_path)
+        }
+        
+        # Add additional data if provided
+        if additional_data and isinstance(additional_data, dict):
+            payload.update(additional_data)
+        
+        # Send POST request
+        headers = {
+            'Content-Type': 'application/json',
+            'User-Agent': 'MAST-Learn-CV-Module/2.0.0'
+        }
+        
+        response = requests.post(api_url, json=payload, headers=headers, timeout=30)
+        
+        # Check response
+        if response.status_code == 200:
+            print(f"✅ Data sent successfully to {api_url}")
+            try:
+                return response.json()
+            except:
+                return {"status": "success", "message": "Data sent successfully", "response_text": response.text}
+        else:
+            error_msg = f"❌ API Error {response.status_code}: {response.text}"
+            print(error_msg)
+            return {"status": "error", "code": response.status_code, "message": response.text}
+            
+    except requests.exceptions.Timeout:
+        error_msg = "❌ Request timeout - API took too long to respond"
+        print(error_msg)
+        return {"status": "error", "message": "Request timeout"}
+        
+    except requests.exceptions.ConnectionError:
+        error_msg = f"❌ Connection error - Cannot reach {api_url}"
+        print(error_msg)
+        return {"status": "error", "message": "Connection error"}
+        
+    except FileNotFoundError:
+        error_msg = f"❌ Image file not found: {image_path}"
+        print(error_msg)
+        return {"status": "error", "message": f"Image file not found: {image_path}"}
+        
+    except Exception as e:
+        error_msg = f"❌ Unexpected error: {str(e)}"
+        print(error_msg)
+        return {"status": "error", "message": str(e)}
+
+
+def webcam_predict_and_send(model, camera_index: int = 0, class_names: list = None, api_url: str = "", additional_data: dict = None) -> dict:
+    """
+    Complete workflow: capture image, predict, and send to API.
+
+    Parameters:
+    model: The loaded Keras model object.
+    camera_index (int): Index of the camera to use.
+    class_names (list): List of class names. If None, uses default classes.
+    api_url (str): URL of the REST API endpoint.
+    additional_data (dict): Optional additional data to include in JSON.
+
+    Returns:
+    dict: Combined prediction and API response data.
+    """
+    try:
+        # Capture image from webcam
+        image_path = capture_webcam_image(camera_index)
+        
+        # Make predictions
+        label = predict_image_label(model, image_path, class_names)
+        confidence = predict_image_confidence(model, image_path, class_names)
+        
+        # Send to API if URL provided
+        api_response = None
+        if api_url:
+            api_response = send_prediction_data(image_path, label, confidence, api_url, additional_data)
+        
+        # Return combined results
+        result = {
+            "image_path": image_path,
+            "label": label,
+            "confidence": confidence,
+            "api_sent": bool(api_url),
+            "api_response": api_response
+        }
+        
+        print(f"Prediction: {label} (confidence: {confidence:.2f})")
+        if api_url:
+            print(f"API Status: {api_response.get('status', 'unknown')}")
+            
+        return result
+        
+    except Exception as e:
+        error_result = {
+            "status": "error",
+            "message": str(e),
+            "label": None,
+            "confidence": None,
+            "api_sent": False,
+            "api_response": None
+        }
+        print(f"❌ Workflow error: {str(e)}")
+        return error_result
 
 
 if __name__ == "__main__":

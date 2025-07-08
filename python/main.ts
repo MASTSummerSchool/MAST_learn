@@ -63,4 +63,42 @@ namespace robot {
         Generator.addCode(`# Use Mind+ list blocks to create class_names list`);
     }
 
+    //% block="Send prediction data: image [IMAGE_PATH] label [LABEL] confidence [CONFIDENCE] to API [API_URL]" blockType="reporter"
+    //% IMAGE_PATH.shadow="string" IMAGE_PATH.defl="'image.jpg'"
+    //% LABEL.shadow="string" LABEL.defl="'predicted_label'"
+    //% CONFIDENCE.shadow="math_number" CONFIDENCE.defl="0.95"
+    //% API_URL.shadow="string" API_URL.defl="'https://api.example.com/predictions'"
+    export function send_prediction_data(parameter: any, block: any) {
+        let image_path = parameter.IMAGE_PATH.code;
+        let label = parameter.LABEL.code;
+        let confidence = parameter.CONFIDENCE.code;
+        let api_url = parameter.API_URL.code;
+        Generator.addImport(`from learn import send_prediction_data`);
+        Generator.addCode(`send_prediction_data(${image_path}, ${label}, ${confidence}, ${api_url})`);
+        
+        // Add comments
+        Generator.addCode(`# Sends JSON with base64 image, label, confidence to REST API`);
+        Generator.addCode(`# Returns API response or error information`);
+        Generator.addCode(`# Includes timestamp and automatic error handling`);
+    }
+
+    //% block="Webcam predict and send: model [MODEL] camera [CAMERA_INDEX] classes [CLASS_NAMES] to API [API_URL]" blockType="reporter"
+    //% MODEL.shadow="normal" MODEL.defl="'custom_model'"
+    //% CAMERA_INDEX.shadow="math_number" CAMERA_INDEX.defl="0"
+    //% CLASS_NAMES.shadow="normal" CLASS_NAMES.defl="'class_list'"
+    //% API_URL.shadow="string" API_URL.defl="'https://api.example.com/predictions'"
+    export function webcam_predict_and_send(parameter: any, block: any) {
+        let model = parameter.MODEL.code;
+        let camera_index = parameter.CAMERA_INDEX.code;
+        let class_names = parameter.CLASS_NAMES.code;
+        let api_url = parameter.API_URL.code;
+        Generator.addImport(`from learn import webcam_predict_and_send`);
+        Generator.addCode(`webcam_predict_and_send(${model}, ${camera_index}, ${class_names}, ${api_url})`);
+        
+        // Add comments
+        Generator.addCode(`# Complete workflow: capture + predict + send to API`);
+        Generator.addCode(`# Returns combined prediction and API response data`);
+        Generator.addCode(`# Automatic error handling and status reporting`);
+    }
+
 }
