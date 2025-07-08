@@ -1,3 +1,3 @@
 opencv-python>=4.7.0.72
-keras>=2.15.0
+tf-nightly
 numpy>=1.24.3

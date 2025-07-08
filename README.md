@@ -148,9 +148,11 @@ print(f"Predizione: {etichetta}, Confidenza: {confidenza:.2f}")
 
 ## Requisiti Tecnici
 
-- **opencv-python** >= 4.5.0 - Cattura e elaborazione immagini
-- **keras** >= 2.8.0 - Caricamento e inferenza modello
-- **numpy** >= 1.20.0 - Operazioni array
+- **opencv-python** >= 4.7.0 - Cattura e elaborazione immagini  
+- **tf-nightly** - TensorFlow nightly con Keras 3.10+ integrato (supporta Python 3.13+)
+- **numpy** >= 1.24.0 - Operazioni array
+
+⚡ **Nota**: Usa TensorFlow nightly per compatibilità Python 3.13+ con preprocessing MobileNet ottimizzato!
 
 ## Configurazione Webcam
 
