@@ -1,4 +1,4 @@
-# Computer Vision Module for MAST Summer School
+# MAST Learn - Computer Vision Made Simple 🎯
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
@@ -6,311 +6,326 @@
 [![TensorFlow 2.11](https://img.shields.io/badge/TensorFlow-2.11-orange.svg)](https://tensorflow.org)
 [![Educational](https://img.shields.io/badge/Purpose-Educational-purple.svg)](https://github.com/lozingaro/MAST_learn)
 
-## 📋 Table of Contents
+## 🎯 What is MAST Learn?
 
-- [Description](#description)
-- [Installation](#installation)
-- [Available Blocks](#available-blocks)
-- [Supported Classes](#supported-classes)
-- [File Structure](#file-structure)
-- [Usage Examples](#usage-examples)
-- [Technical Requirements](#technical-requirements)
-- [API JSON Format](#api-json-format)
-- [Webcam Configuration](#webcam-configuration)
-- [Why Use Model Objects](#why-use-model-objects)
-- [Educational Activities](#educational-activities)
-- [Version](#version)
-- [Contributing](#contributing)
-- [License](#license)
+MAST Learn è un modulo di computer vision pensato per chi vuole imparare l'intelligenza artificiale in modo pratico e divertente. Sviluppato per la MAST Summer School dell'Università di Bologna, ti permette di:
 
-## 📖 Description
+- **Catturare immagini dalla webcam** con un semplice click
+- **Riconoscere oggetti** usando modelli di intelligenza artificiale
+- **Condividere le tue predizioni** attraverso API web
+- **Imparare facendo** con esempi pratici e intuitivi
 
-Modulo di visione artificiale per la cattura di immagini da webcam e predizione di oggetti utilizzando modelli MobileNet custom. Progettato per attività didattiche di intelligenza artificiale e computer vision.
+Perfetto per studenti, insegnanti e chiunque voglia scoprire il mondo della computer vision senza dover diventare un esperto di programmazione!
 
-## Installazione
+## 📋 Indice
 
-1. Scarica e installa [Mind+ Desktop app](https://mindplus.dfrobot.com)
-2. Inserisci l'URL del progetto: **<https://github.com/lozingaro/MAST_learn>** nell'interfaccia per importare questa libreria
+- [Installazione Quick Start](#installazione-quick-start)
+- [Funzioni Disponibili](#funzioni-disponibili)
+- [Esempi Pratici](#esempi-pratici)
+- [Classi Riconosciute](#classi-riconosciute)
+- [Risoluzione Problemi](#risoluzione-problemi)
+- [Per Sviluppatori](#per-sviluppatori)
+- [Licenza e Contatti](#licenza-e-contatti)
 
-## Blocchi Disponibili (8 Blocchi Totali + Utilità Debug)
+## 🚀 Installazione Quick Start
 
-### 🎥 Cattura Webcam
+**Hai 2 minuti? Ecco come iniziare:**
 
-- **`capture_webcam_image(camera_index)`** - Cattura un'immagine dalla webcam e la salva
-  - `camera_index`: Indice della webcam (0 = webcam principale)
-  - Restituisce: Percorso del file immagine salvato
+1. **Scarica Mind+**: Vai su [mindplus.dfrobot.com](https://mindplus.dfrobot.com) e installa l'app
+2. **Importa MAST Learn**: Copia e incolla questo URL: `https://github.com/lozingaro/MAST_learn`
+3. **Inizia a sperimentare**: Sei pronto! Le dipendenze si installano automaticamente
 
-### 🤖 Modello Custom  
+## 🛠️ Funzioni Disponibili
 
-- **`load_custom_model(model_path)`** - Carica un modello Keras personalizzato da file locale o URL
-  - `model_path`: Nome del file modello o URL (es. "mobilenet_NOME_v1.keras" o "<https://github.com/user/repo/raw/main/model.keras>")
-  - Restituisce: Modello caricato pronto per l'inferenza
-  - ⭐ **Supporto URL**: Cache automatica per modelli remoti
-  - 🔄 **Conversione Automatica**: File .keras convertiti automaticamente a .h5 per compatibilità Mind+
+MAST Learn offre **23 funzioni** organizzate in 5 categorie principali. Ecco le più importanti che userai:
 
-### ⚡ Workflow Webcam Ottimizzato
+### 🎥 **Cattura Immagini** (Le Basi)
 
-- **`webcam_predict_label(model, camera_index, class_names)`** - ⭐ Cattura + predici etichetta
-  - Usa oggetto model precaricato (più efficiente!)
-  - Restituisce: Stringa con l'etichetta
+**`capture_webcam_image(camera_index=0)`** 📸
+- Scatta una foto con la webcam e la salva automaticamente
+- Perfetto per iniziare - funziona subito!
+- *Restituisce*: Il percorso dove è salvata l'immagine
 
-- **`webcam_predict_confidence(model, camera_index, class_names)`** - ⭐ Cattura + predici confidenza  
-  - Usa oggetto model precaricato (più efficiente!)
-  - Restituisce: Numero decimale 0.0-1.0
+### 🤖 **Gestione Modelli** (Il Motore)
 
-### 🌐 API REST Integration
+**`load_custom_model(model_path)`** 🧠
+- Carica il "cervello" dell'intelligenza artificiale
+- Supporta modelli da file locali, percorsi personalizzati o da internet
+- *Trucco*: Carica una volta, usa tante volte (molto più veloce!)
+- *Bonus*: Converte automaticamente i formati problematici
 
-- **`send_prediction_data(image_path, label, confidence, api_url)`** - ⭐ Invia dati predizione via REST API
-  - Codifica immagine in base64 e crea JSON con timestamp
-  - Restituisce: Risposta API o informazioni errore
+**Dove mettere i tuoi modelli:**
+- **Windows**: `C:\Users\TuoNome\models\mio_modello.h5`
+- **Mac**: `/Users/TuoNome/models/mio_modello.h5`
+- **Linux**: `/home/TuoNome/models/mio_modello.h5`
+- **Personalizzato**: Qualsiasi percorso completo che vuoi!
+- **Online**: URL diretti da GitHub o altri server
 
-- **`webcam_predict_and_send(model, camera_index, class_names, api_url)`** - ⭐ Workflow completo con API
-  - Cattura + predici + invia automaticamente all'API
-  - Restituisce: Dati predizione combinati con risposta API
+### ⚡ **Predizioni Webcam** (La Magia)
 
-### 🔧 Debug e Utilità
+**`webcam_predict_label(model, camera_index, class_names)`** 🎯
+- Scatta una foto E riconosce l'oggetto in un colpo solo
+- *Restituisce*: Il nome dell'oggetto riconosciuto
 
-- **`verify_model_compatibility(model_path)`** - ⭐ Diagnostica problemi modello
-  - Verifica compatibilità formato .keras, .h5, SavedModel
-  - Restituisce: Informazioni dettagliate e suggerimenti per risoluzione
-  - **Utile per**: Risolvere errori di caricamento modelli
+**`webcam_predict_confidence(model, camera_index, class_names)`** 📊
+- Come sopra, ma ti dice quanto è sicuro (da 0.0 a 1.0)
+- *Perfetto per*: Capire se fidarsi della predizione
 
-- **`convert_model_format(input_path, output_path, target_format)`** - Conversione formato modelli
-  - Converte tra .keras, .h5, SavedModel
-  - Risolve problemi di compatibilità TensorFlow/Keras
-  - **Utile per**: Convertire modelli problematici
+### 🆕 **Predizioni su Immagini Esistenti** (Novità!)
 
-**Parametri comuni:**
+**`predict_label_from_image(model, image_path, class_names)`** 🔍
+- Riconosce oggetti in immagini già salvate
+- *Ideale per*: Analizzare la stessa foto più volte
 
-- `model`: Oggetto modello caricato
-- `camera_index`: Indice della webcam (0 = principale)
-- `class_names`: Lista etichette (usa blocchi lista Mind+, opzionale)
-- `api_url`: URL endpoint REST API (es. "<https://api.example.com/predictions>")
+**`predict_confidence_from_image(model, image_path, class_names)`** 📈
+- Come sopra, ma restituisce il livello di confidenza
+- *Perfetto per*: Confrontare predizioni sulla stessa immagine
 
-## Classi Supportate
+### 🌐 **Condivisione Online** (Per i Social!)
 
-Il modello custom MobileNet riconosce le seguenti 8 classi di oggetti:
+**`send_prediction_data(image_path, label, confidence, api_url)`** 📤
+- Invia le tue scoperte a un server web
+- *Utile per*: Creare app web o condividere risultati
 
-- `aqualy` - Bottiglia d'acqua
-- `calcolatrice_casio` - Calcolatrice Casio
-- `bicchiere` - Bicchiere
-- `iphone13` - iPhone 13
-- `mouse_wireless` - Mouse wireless
-- `pennarello_giotto` - Pennarello Giotto
-- `persona` - Persona
-- `webcam_box` - Scatola webcam
+**`webcam_predict_and_send(model, camera_index, class_names, api_url)`** 🚀
+- Fa tutto in automatico: scatta, riconosce, invia!
+- *Perfetto per*: Progetti avanzati o demo live
 
-## Struttura File
+### 🔧 **Risoluzione Problemi** (Il Pronto Soccorso)
 
-```
-~/models/
-├── mobilenet_NOME_v1.keras             # Modelli originali .keras
-├── mobilenet_NOME_v1_auto_converted.h5 # Conversioni automatiche (.h5)
-└── cache/
-    ├── downloaded_model.keras          # Modelli scaricati da URL
-    └── downloaded_model_auto_converted.h5  # Conversioni automatiche da URL
+**`verify_model_compatibility(model_path)`** 🩺
+- Controlla se il tuo modello funziona correttamente
+- *Utile quando*: Qualcosa non va e non sai perché
 
-~/webcam_images/
-├── webcam_capture_20250108_143025_123.jpg  # Immagini catturate con timestamp
-├── webcam_capture_20250108_143030_456.jpg  # Non sovrascrive immagini precedenti
-└── ...
-```
+**`convert_model_format(input_path, output_path, target_format)`** 🔄
+- Converte modelli tra formati diversi
+- *Salva-vita per*: Modelli che danno errori strani
 
-## Esempio d'Uso
+## 🧪 Esempi Pratici
 
-### ⭐ Workflow Semplificato (Predizione Base)
+### 🎯 **Esempio 1: Il tuo primo riconoscimento oggetti**
 
 ```python
-# 1. Crea lista etichette con blocchi lista Mind+
-mie_etichette = ["gatto", "cane", "uccello", "pesce", "coniglio", "tartaruga", "hamster", "criceto"]
+# Passo 1: Carica il modello (solo una volta!)
+# Opzioni diverse per caricare modelli:
 
-# 2. Carica il modello UNA VOLTA (locale o da URL)
-modello = load_custom_model("mio_modello_animali.keras")
-# oppure da GitHub:
-# modello = load_custom_model("https://github.com/utente/repo/raw/main/animali.keras")
+# A) Modello MAST-AI ufficiale (default, consigliato!)
+modello = load_custom_model("https://github.com/MASTSummerSchool/MAST-AI/raw/refs/heads/main/models/mobilenet_NOME_v1.h5")
 
-# 3. Usa il modello precaricato per predizioni multiple (efficiente!)
-etichetta = webcam_predict_label(modello, 0, mie_etichette)
-print(f"Animale: {etichetta}")
+# B) Modello locale (metti il tuo file nella cartella models)
+# modello = load_custom_model("mio_modello.h5")
 
-# 4. Ottieni la confidenza con lo stesso modello
-confidenza = webcam_predict_confidence(modello, 0, mie_etichette)
-print(f"Sicurezza: {confidenza:.1%}")
+# C) Percorso personalizzato completo
+# Windows: modello = load_custom_model(r"C:\Users\TuoNome\Desktop\modelli\mio_modello.h5")
+# Mac:     modello = load_custom_model("/Users/TuoNome/Desktop/modelli/mio_modello.h5")
+# Linux:   modello = load_custom_model("/home/TuoNome/Desktop/modelli/mio_modello.h5")
 
-# 5. Usa in condizioni Mind+
-if etichetta == "gatto":
-    print("Miao!")
-if confidenza > 0.8:
-    print("Predizione molto sicura!")
+# Passo 2: Definisci cosa può riconoscere
+oggetti = ["aqualy", "calcolatrice_casio", "bicchiere", "iphone13", "mouse_wireless", "pennarello_giotto", "persona", "webcam_box"]
+
+# Passo 3: Scatta e riconosci!
+cosa_vedo = webcam_predict_label(modello, 0, oggetti)
+quanto_sicuro = webcam_predict_confidence(modello, 0, oggetti)
+
+# Passo 4: Mostra i risultati
+print(f"Ho visto: {cosa_vedo}")
+print(f"Sono sicuro al {quanto_sicuro:.1%}")
 ```
 
-### 🌐 Workflow con API REST (Nuovo!)
+### 🔍 **Esempio 2: Analizza la stessa foto più volte (NUOVO!)**
 
 ```python
-# 1. Setup modello e classi
-mie_etichette = ["gatto", "cane", "uccello", "pesce", "coniglio", "tartaruga", "hamster", "criceto"]
-modello = load_custom_model("mio_modello_animali.keras")
+# Scatta una foto una volta sola
+foto = capture_webcam_image(0)
 
-# 2. Workflow completo con invio automatico API
-api_url = "https://mia-api.com/predictions"
-risultato = webcam_predict_and_send(modello, 0, mie_etichette, api_url)
+# Analizzala con diversi modelli o impostazioni
+cosa_vedo = predict_label_from_image(modello, foto, oggetti)
+sicurezza = predict_confidence_from_image(modello, foto, oggetti)
 
-print(f"Predizione: {risultato['label']} ({risultato['confidence']:.2f})")
-print(f"API Status: {risultato['api_response']['status']}")
+print(f"Nella foto vedo: {cosa_vedo} (sicurezza: {sicurezza:.1%})")
 
-# 3. Oppure invio manuale separato
-immagine = capture_webcam_image(0)
-etichetta = webcam_predict_label(modello, 0, mie_etichette)
-confidenza = webcam_predict_confidence(modello, 0, mie_etichette)
-
-# Invia dati all'API
-api_response = send_prediction_data(immagine, etichetta, confidenza, api_url)
-print(f"API Response: {api_response}")
+# Bonus: Puoi rianalizzare la stessa foto quando vuoi!
+# Utile per confrontare risultati o per lezioni
 ```
 
-### Workflow Manuale (Separato)
+### 🌐 **Esempio 3: Condividi online le tue scoperte**
 
 ```python
-# 1. Cattura immagine separatamente
-immagine = capture_webcam_image(0)
+# Setup iniziale con diversi modi di caricare modelli
+# Opzione 1: Modello MAST-AI ufficiale
+modello = load_custom_model("https://github.com/MASTSummerSchool/MAST-AI/raw/refs/heads/main/models/mobilenet_NOME_v1.h5")
 
-# 2. Carica modello (locale o da URL)
-modello = load_custom_model("mio_modello.keras")
-# oppure da GitHub:
-# modello = load_custom_model("https://github.com/utente/repo/raw/main/modello.keras")
+# Opzione 2: Modello personalizzato
+# modello = load_custom_model("mio_modello_animali.h5")
 
-# 3. Crea etichette custom con blocchi lista Mind+
-etichette = ["classe1", "classe2", "classe3", "classe4", "classe5", "classe6", "classe7", "classe8"]
+# Opzione 3: Percorso completo personalizzato
+# modello = load_custom_model("/percorso/completo/al/mio/modello.h5")
 
-# 4. Usa l'immagine catturata manualmente
-# (Nota: per immagini pre-catturate, serve una funzione predict_image separata)
+oggetti = ["gatto", "cane", "uccello", "pesce"]
+
+# Condivisione automatica
+risultato = webcam_predict_and_send(modello, 0, oggetti, "https://petoiupload.vercel.app/api/predict")
+
+print(f"Ho riconosciuto: {risultato['label']}")
+print(f"Inviato al server: {risultato['api_response']['status']}")
 ```
 
-## Requisiti Tecnici
-
-### Dipendenze Principali (Python 3.8+ compatibili)
-
-- **numpy** >= 1.19.5 - Operazioni array e calcoli numerici
-- **opencv-python** >= 4.5.0 - Cattura e elaborazione immagini webcam
-- **tensorflow** >= 2.8.0, <2.16.0 - TensorFlow compatibile con Python 3.8
-- **keras** >= 2.8.0, <3.0.0 - Caricamento modelli e inferenza (TF.Keras)
-
-### Dipendenze di Supporto
-
-- **requests** >= 2.25.0 - Comunicazioni HTTP per API REST
-- **h5py** >= 3.1.0 - Lettura/scrittura file modelli HDF5
-- **six** >= 1.15.0 - Compatibilità Python 2/3
-- **protobuf** >= 3.19.0, <4.0.0 - Serializzazione dati TensorFlow
-- **typing-extensions** >= 3.7.4 - Supporto type hints
-
-⚡ **Nota**: Dipendenze ottimizzate per Mind+ Python 3.8.5 - configurazione manuale completa!
-
-### 🎯 Compatibilità Mind+
-
-- **Python 3.8.5** - Versione target per ambiente Mind+
-- **TensorFlow 2.11.1** - Stabile e compatibile con Python 3.8
-- **Keras 2.11.0** - Integrato in TensorFlow (tensorflow.keras)
-- **Protobuf <4.0** - Evita conflitti di versione
-- **Installazione automatica** - Mind+ gestisce tutte le dipendenze
-
-## 🔧 Risoluzione Problemi Modelli .keras
-
-### ✅ **NUOVO**: Conversione Automatica Integrata
-
-**Non serve più fare nulla manualmente!** Il modulo ora converte automaticamente i file .keras a .h5:
+### 🎓 **Esempio 4: Per insegnanti - Workflow didattico**
 
 ```python
-# Prima (problematico):
-# modello = load_custom_model("model.keras")  # Errori di compatibilità
+# Perfetto per lezioni interattive!
+# Scegli come caricare il modello:
 
-# Ora (automatico):
-modello = load_custom_model("model.keras")    # ✅ Conversione automatica a .h5!
-# Output: 🔄 Modello automaticamente convertito da .keras a .h5 per compatibilità
-#         ✅ Modello caricato (compile=False): ~/models/model_auto_converted.h5
+# A) Modello MAST-AI ufficiale (pronto all'uso!)
+modello = load_custom_model("https://github.com/MASTSummerSchool/MAST-AI/raw/refs/heads/main/models/mobilenet_NOME_v1.h5")
+oggetti_scuola = ["aqualy", "calcolatrice_casio", "bicchiere", "iphone13", "mouse_wireless", "pennarello_giotto", "persona", "webcam_box"]
+
+# B) Il tuo modello personalizzato
+# modello = load_custom_model("oggetti_scuola.h5")  # Nella cartella ~/models/
+# oggetti_scuola = ["penna", "libro", "quaderno", "gomma", "righello"]
+
+# C) Percorso completo personalizzato
+# modello = load_custom_model("C:\\Users\\Insegnante\\Desktop\\modelli\\scuola.h5")  # Windows
+# modello = load_custom_model("/Users/Insegnante/Desktop/modelli/scuola.h5")        # Mac
+# modello = load_custom_model("/home/insegnante/Desktop/modelli/scuola.h5")         # Linux
+
+# Gli studenti mostrano oggetti alla webcam
+for tentativo in range(5):
+    input("Premi INVIO quando hai un oggetto davanti alla webcam...")
+    
+    oggetto = webcam_predict_label(modello, 0, oggetti_scuola)
+    confidenza = webcam_predict_confidence(modello, 0, oggetti_scuola)
+    
+    print(f"Tentativo {tentativo + 1}: {oggetto} (confidenza: {confidenza:.1%})")
+    
+    if confidenza > 0.8:
+        print("🎉 Ottimo! Predizione molto sicura!")
+    else:
+        print("🤔 Prova a migliorare l'inquadratura...")
 ```
 
-**Caratteristiche della conversione automatica:**
+## 🎯 Classi Riconosciute
 
-- 📁 **Cache intelligente**: Conversione solo se necessaria
-- ⚡ **Controllo timestamp**: Riconverte solo se .keras è più recente
-- 🌐 **Supporto URL**: Funziona anche con modelli scaricati da GitHub
-- 🛡️ **Fallback**: Se la conversione fallisce, prova comunque il caricamento diretto
+Il modello principale di MAST Learn riconosce questi **8 oggetti comuni**:
 
-### ❌ Problema: "Keras non trova la signature del modello" (Legacy)
+| Oggetto | Descrizione | Emoji |
+|---------|-------------|--------|
+| `aqualy` | Bottiglia d'acqua | 💧 |
+| `calcolatrice_casio` | Calcolatrice Casio | 🔢 |
+| `bicchiere` | Bicchiere | 🥤 |
+| `iphone13` | iPhone 13 | 📱 |
+| `mouse_wireless` | Mouse wireless | 🖱️ |
+| `pennarello_giotto` | Pennarello Giotto | 🖊️ |
+| `persona` | Persona | 👤 |
+| `webcam_box` | Scatola webcam | 📦 |
 
-Questo problema è ora risolto automaticamente, ma ecco le soluzioni manuali se necessarie:
+> **Nota per insegnanti**: Puoi usare i tuoi modelli personalizzati con qualsiasi classe! Questi sono solo gli esempi inclusi.
 
-#### **🚀 Soluzione Rapida (Automatica)**
+## 📁 Configurazione Modelli e File
 
+### 🎯 **Come Caricare i Modelli** (Importante!)
+
+MAST Learn ti offre **3 modi** per caricare i modelli:
+
+#### **1. Modello MAST-AI Ufficiale** (Consigliato! 🌟)
 ```python
-# 1. Diagnostica il problema
-info = verify_model_compatibility("mobilenet_NOME_v1.keras")
+# Usa il modello già pronto del progetto MAST-AI
+modello = load_custom_model("https://github.com/MASTSummerSchool/MAST-AI/raw/refs/heads/main/models/mobilenet_NOME_v1.h5")
+```
+**Vantaggi**: Sempre aggiornato, funziona subito, riconosce 8 oggetti comuni
+
+#### **2. Modello Locale** (Semplice)
+```python
+# Metti il tuo file nella cartella ~/models/ e usa solo il nome
+modello = load_custom_model("mio_modello.h5")
+```
+**Percorsi automatici**:
+- **Windows**: `C:\Users\TuoNome\models\mio_modello.h5`
+- **Mac**: `/Users/TuoNome/models/mio_modello.h5`
+- **Linux**: `/home/TuoNome/models/mio_modello.h5`
+
+#### **3. Percorso Personalizzato** (Massima Flessibilità)
+```python
+# Specifica il percorso completo dove vuoi tu
+# Windows
+modello = load_custom_model(r"C:\Users\TuoNome\Desktop\progetti\modelli\mio_modello.h5")
+
+# Mac
+modello = load_custom_model("/Users/TuoNome/Desktop/progetti/modelli/mio_modello.h5")
+
+# Linux
+modello = load_custom_model("/home/TuoNome/Desktop/progetti/modelli/mio_modello.h5")
+```
+
+### 📂 **Dove Finiscono i File**
+
+```
+📂 La tua home directory
+├── 📁 models/                     # I tuoi modelli AI
+│   ├── 🧠 mio_modello.keras       # Modelli originali
+│   ├── 🔄 mio_modello_convertito.h5  # Conversioni automatiche
+│   └── 📁 cache/                  # Modelli scaricati da internet
+│       └── 💾 modello_online.h5
+└── 📁 webcam_images/              # Le tue foto
+    ├── 📷 foto_20250710_143025.jpg
+    ├── 📷 foto_20250710_143030.jpg
+    └── 📷 ...
+```
+
+> **Tip**: Su Windows è `C:\Users\TuoNome\`, su Mac è `/Users/TuoNome/`, su Linux è `/home/TuoNome/`
+
+## 🆘 Risoluzione Problemi
+
+### "Il mio modello non funziona!" 😫
+
+**Respira! È normale.** Ecco la soluzione in 3 passi:
+
+#### **Passo 1: Diagnosi automatica**
+```python
+# Lascia che MAST Learn controlli cosa non va
+info = verify_model_compatibility("mio_modello.keras")
 print(info)
-
-# 2. Se necessario, converti il modello manualmente
-nuovo_modello = convert_model_format("mobilenet_NOME_v1.keras", target_format="h5")
-
-# 3. Usa il modello convertito
-modello = load_custom_model(nuovo_modello)
 ```
 
-#### **🔍 Diagnosi Manuale**
+#### **Passo 2: Conversione automatica**
+```python
+# MAST Learn prova a sistemare automaticamente
+modello = load_custom_model("mio_modello.keras")
+# Se vedi "🔄 Conversione automatica..." sei a posto!
+```
+
+#### **Passo 3: Se ancora non funziona**
+```python
+# Forza la conversione manuale
+modello_sistemato = convert_model_format("mio_modello.keras", target_format="h5")
+modello = load_custom_model(modello_sistemato)
+```
+
+### "La webcam non funziona!" 📷
 
 ```python
-# Verifica dettagliata compatibilità
-info = verify_model_compatibility("/path/to/your/model.keras")
-
-# Controllo risultati
-if not info["loadable"]:
-    print("❌ Modello non caricabile:")
-    print(f"Errore: {info['error']}")
-    print("Suggerimenti:")
-    for suggestion in info["suggestions"]:
-        print(f"- {suggestion}")
+# Prova webcam diverse
+foto = capture_webcam_image(0)  # Webcam principale
+# oppure
+foto = capture_webcam_image(1)  # Webcam esterna
 ```
 
-#### **🛠️ Soluzioni Alternative**
+### "Le predizioni sono sbagliate!" 🤔
 
-1. **Formato .h5 (Raccomandato per Mind+)**:
+- **Controlla la luce**: Serve buona illuminazione
+- **Avvicina l'oggetto**: Riempi il frame
+- **Controlla le classi**: Stai usando la lista giusta?
+- **Verifica la confidenza**: Se sotto 0.7, prova a migliorare l'inquadratura
 
-   ```python
-   # Converti a formato .h5 più compatibile
-   nuovo_path = convert_model_format("model.keras", target_format="h5")
-   modello = load_custom_model(nuovo_path)
-   ```
+### Problemi Comuni e Fix Rapidi
 
-2. **Caricamento senza compilazione**:
-
-   ```python
-   # Il modulo ora prova automaticamente compile=False
-   modello = load_custom_model("model.keras")  # Gestione automatica errori
-   ```
-
-3. **SavedModel format**:
-
-   ```python
-   # Per modelli complessi
-   nuovo_path = convert_model_format("model.keras", target_format="saved_model")
-   modello = load_custom_model(nuovo_path)
-   ```
-
-#### **⚠️ Problemi Comuni e Soluzioni**
-
-| Errore | Causa | Soluzione |
-|--------|-------|-----------|
-| "Invalid signature" | Incompatibilità versione | Usa `convert_model_format()` |
-| "No signature found" | Modello non compilato | Caricamento automatico con `compile=False` |
-| "File not found" | Percorso errato | Verifica `~/models/model.keras` |
-| "Format not supported" | Formato obsoleto | Conveti a .h5 o SavedModel |
-
-#### **✅ Verifica Funzionamento**
-
-```python
-# Test completo dopo risoluzione
-modello = load_custom_model("model.h5")  # Usa formato convertito
-etichetta = webcam_predict_label(modello, 0, ["classe1", "classe2"])
-print(f"Test riuscito: {etichetta}")
-```
+| Problema | Soluzione Rapida |
+|----------|------------------|
+| "File not found" | Controlla che il file sia in `~/models/` |
+| "Camera not found" | Prova `camera_index=1` o `2` |
+| "Low confidence" | Migliora illuminazione e inquadratura |
+| "Wrong predictions" | Verifica di usare la lista classi corretta |
+| "Import error" | Riavvia Mind+ e riprova |
 
 ## Formato JSON API
 
@@ -397,40 +412,84 @@ etichetta3 = webcam_predict_label(modello, 0, classi)         # Usa subito
 
 **Risultato:** Tempo di esecuzione ridotto del 70-80%! ⚡
 
-## Versione
+## 🔧 Per Sviluppatori
 
-**v2.2.0** - Conversione automatica .keras→.h5: risoluzione definitiva dei problemi di compatibilità Mind+ con cache intelligente e supporto URL completo
+### Struttura del Progetto
 
-## 🤝 Contributing
+```
+MAST_learn/
+├── python/
+│   └── libraries/
+│       ├── learn.py       # 🧠 Tutte le funzioni principali
+│       └── main.py        # 📝 Esempi pratici
+├── config.json           # ⚙️ Configurazione Mind+
+└── README.md             # 📚 Questa guida
+```
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+### Requisiti Tecnici
 
-### Quick Start for Contributors
+- **Python 3.8+** (ottimizzato per Mind+)
+- **TensorFlow 2.8-2.15** (no TF 2.16+)
+- **OpenCV 4.5+** per webcam
+- **NumPy, Requests** per il resto
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
+> **Nota**: Mind+ installa tutto automaticamente, non preoccuparti!
 
-## 📄 License
+### Come Contribuire
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Hai un'idea per migliorare MAST Learn? Fantastico! 
 
-### Educational Use
+1. **Fai un fork** del progetto
+2. **Crea un branch** per la tua feature: `git checkout -b feature/idea-geniale`
+3. **Fai le tue modifiche** e testale
+4. **Invia una pull request** con una descrizione chiara
 
-This software is developed for educational purposes as part of the MAST (Machine Learning, Artificial Intelligence, Statistics) Summer School program at the University of Bologna.
+### Testare le Modifiche
 
-## 📧 Contact
+```python
+# Test rapido delle funzioni base
+modello = load_custom_model("https://github.com/MASTSummerSchool/MAST-AI/raw/refs/heads/main/models/mobilenet_NOME_v1.h5")
+foto = capture_webcam_image(0)
+risultato = predict_label_from_image(modello, foto, ["test"])
+print(f"Funziona: {risultato}")
+```
 
-- **Author**: Stefano Zingaro
-- **Email**: <stefano.zingaro@unibo.it>
-- **Institution**: University of Bologna
-- **Project**: MAST Summer School
+## 📄 Licenza e Contatti
 
-## 🙏 Acknowledgments
+### Licenza
+Questo progetto è rilasciato sotto **licenza MIT** - puoi usarlo, modificarlo e condividerlo liberamente!
 
-- University of Bologna MAST Summer School Program
-- Mind+ Development Team for the visual programming platform
-- TensorFlow and OpenCV communities for robust ML and CV libraries
-- All students and educators who provide feedback to improve this educational tool
+### Chi Siamo
+- **Autore**: Prof. Stefano Zingaro
+- **Email**: stefano.zingaro@unibo.it
+- **Università**: Università di Bologna
+- **Progetto**: MAST Summer School
+
+### Ringraziamenti 💙
+- **Università di Bologna** per la MAST Summer School
+- **Tutti gli studenti** che hanno testato e migliorato questo strumento
+- **Mind+ Team** per la piattaforma di programmazione visuale
+- **TensorFlow e OpenCV** per le librerie robuste
+- **La community open source** per l'ispirazione continua
+
+---
+
+## 🎯 Versione Attuale
+
+**v2.3.0** - Funzioni per immagini esistenti + README umanizzato
+
+### Novità
+- ✨ Nuove funzioni `predict_label_from_image()` e `predict_confidence_from_image()`
+- 📚 README completamente riscritto in stile umano
+- 🔧 Esempi pratici e guide per principianti
+- 🎓 Sezioni dedicate per insegnanti
+
+### Prossimi Obiettivi
+- 🌟 Supporto per modelli YOLO (object detection)
+- 🎨 Interfaccia grafica per Mind+
+- 🔊 Integrazione con text-to-speech
+- 🌐 Più esempi di integrazione API
+
+---
+
+*Fatto con ❤️ per la comunità educativa italiana*
