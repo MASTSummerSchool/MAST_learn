@@ -7,12 +7,7 @@ namespace robot {
         let camera_index = parameter.CAMERA_INDEX.code;
         Generator.addImport(`from learn import capture_webcam_image`);
         Generator.addCode(`capture_webcam_image(${camera_index})`);
-
-        // Add comments
-        Generator.addCode(`# This block captures an image from the webcam and saves it to:`);
-        Generator.addCode(`# Windows: C:\\Users\\{your user name}\\webcam_images`);
-        Generator.addCode(`# MacOS: /Users/{your user name}/webcam_images`);
-        Generator.addCode(`# Linux: /home/{your user name}/webcam_images`);
+        Generator.addCode(`# Returns the path of the captured image as a string`);
     }
 
     //% block="Load custom model [MODEL_NAME]" blockType="reporter"
@@ -39,7 +34,7 @@ namespace robot {
         let class_names = parameter.CLASS_NAMES.code;
         Generator.addImport(`from learn import webcam_predict_label`);
         Generator.addCode(`webcam_predict_label(${model}, ${camera_index}, ${class_names})`);
-        
+
         // Add comments
         Generator.addCode(`# Capture + predict: returns only label (string)`);
         Generator.addCode(`# Use pre-loaded model object for efficiency`);
@@ -56,7 +51,7 @@ namespace robot {
         let class_names = parameter.CLASS_NAMES.code;
         Generator.addImport(`from learn import webcam_predict_confidence`);
         Generator.addCode(`webcam_predict_confidence(${model}, ${camera_index}, ${class_names})`);
-        
+
         // Add comments
         Generator.addCode(`# Capture + predict: returns only confidence (float 0.0-1.0)`);
         Generator.addCode(`# Use pre-loaded model object for efficiency`);
@@ -64,7 +59,7 @@ namespace robot {
     }
 
     //% block="Get label from existing image [IMAGE_PATH] with model [MODEL] using classes [CLASS_NAMES]" blockType="reporter"
-    //% IMAGE_PATH.shadow="string" IMAGE_PATH.defl="'captured_image.jpg'"
+    //% IMAGE_PATH.shadow="string" IMAGE_PATH.defl="capture_webcam_image(0)"
     //% MODEL.shadow="normal" MODEL.defl="'custom_model'"
     //% CLASS_NAMES.shadow="normal" CLASS_NAMES.defl="'class_list'"
     export function predict_label_from_image(parameter: any, block: any) {
@@ -73,15 +68,11 @@ namespace robot {
         let class_names = parameter.CLASS_NAMES.code;
         Generator.addImport(`from learn import predict_label_from_image`);
         Generator.addCode(`predict_label_from_image(${image_path}, ${model}, ${class_names})`);
-        
-        // Add comments
-        Generator.addCode(`# Predict on existing image: returns only label (string)`);
-        Generator.addCode(`# Perfect for analyzing the same image multiple times`);
-        Generator.addCode(`# Use with captured image path for consistent results`);
+        Generator.addCode(`# IMAGE_PATH must be a valid file path, e.g. the output of capture_webcam_image`);
     }
 
     //% block="Get confidence from existing image [IMAGE_PATH] with model [MODEL] using classes [CLASS_NAMES]" blockType="reporter"
-    //% IMAGE_PATH.shadow="string" IMAGE_PATH.defl="'captured_image.jpg'"
+    //% IMAGE_PATH.shadow="string" IMAGE_PATH.defl="capture_webcam_image(0)"
     //% MODEL.shadow="normal" MODEL.defl="'custom_model'"
     //% CLASS_NAMES.shadow="normal" CLASS_NAMES.defl="'class_list'"
     export function predict_confidence_from_image(parameter: any, block: any) {
@@ -90,11 +81,7 @@ namespace robot {
         let class_names = parameter.CLASS_NAMES.code;
         Generator.addImport(`from learn import predict_confidence_from_image`);
         Generator.addCode(`predict_confidence_from_image(${image_path}, ${model}, ${class_names})`);
-        
-        // Add comments
-        Generator.addCode(`# Predict on existing image: returns only confidence (float 0.0-1.0)`);
-        Generator.addCode(`# Perfect for analyzing the same image multiple times`);
-        Generator.addCode(`# Use with captured image path for consistent results`);
+        Generator.addCode(`# IMAGE_PATH must be a valid file path, e.g. the output of capture_webcam_image`);
     }
 
     //% block="Send prediction data: image [IMAGE_PATH] label [LABEL] confidence [CONFIDENCE] to API [API_URL]" blockType="reporter"
@@ -109,7 +96,7 @@ namespace robot {
         let api_url = parameter.API_URL.code;
         Generator.addImport(`from learn import send_prediction_data`);
         Generator.addCode(`send_prediction_data(${image_path}, ${label}, ${confidence}, ${api_url})`);
-        
+
         // Add comments
         Generator.addCode(`# Sends JSON with base64 image, label, confidence to REST API`);
         Generator.addCode(`# Returns API response or error information`);
@@ -128,7 +115,7 @@ namespace robot {
         let api_url = parameter.API_URL.code;
         Generator.addImport(`from learn import webcam_predict_and_send`);
         Generator.addCode(`webcam_predict_and_send(${model}, ${camera_index}, ${class_names}, ${api_url})`);
-        
+
         // Add comments
         Generator.addCode(`# Complete workflow: capture + predict + send to API`);
         Generator.addCode(`# Returns combined prediction and API response data`);
@@ -141,7 +128,7 @@ namespace robot {
         let model_path = parameter.MODEL_PATH.code;
         Generator.addImport(`from learn import verify_model_compatibility`);
         Generator.addCode(`verify_model_compatibility(${model_path})`);
-        
+
         // Add comments
         Generator.addCode(`# Diagnoses model loading issues and compatibility`);
         Generator.addCode(`# Returns detailed information about the model file`);
@@ -156,7 +143,7 @@ namespace robot {
         let target_format = parameter.TARGET_FORMAT.code;
         Generator.addImport(`from learn import convert_model_format`);
         Generator.addCode(`convert_model_format(${input_path}, target_format=${target_format})`);
-        
+
         // Add comments
         Generator.addCode(`# Converts between .keras, .h5, and saved_model formats`);
         Generator.addCode(`# Solves compatibility issues between TensorFlow versions`);

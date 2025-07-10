@@ -1,10 +1,10 @@
-numpy>=1.21.2,<1.25
-opencv-python>=4.11.0.86
+numpy>=1.21.2,<1.25.0
+opencv-python>=4.11.0.86,<5.0.0
 tensorflow>=2.8.0,<2.16.0
 keras>=2.8.0,<3.0.0
-requests>=2.25.0
-h5py>=3.1.0
-six>=1.15.0
+requests>=2.25.0,<3.0.0
+h5py>=3.1.0,<4.0.0
+six>=1.15.0,<2.0.0
 protobuf>=3.19.0,<4.0.0
-typing-extensions>=3.7.4
-Pillow>=11.3.0
+typing-extensions>=3.7.4,<5.0.0
+Pillow>=9.0.0,<10.0.0

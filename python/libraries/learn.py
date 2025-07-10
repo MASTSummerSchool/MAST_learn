@@ -833,9 +833,25 @@ def webcam_predict_and_send(model, camera_index: int = 0, class_names: list = No
 
 
 if __name__ == "__main__":
-    # Test the webcam prediction functionality
+    # Test completo: cattura da webcam, predizione e invio a API (se URL fornito)
     try:
-        result = webcam_predict()
-        print(f"Risultato: {result}")
+        # Parametri di test
+        camera_index = 0
+        model_path = "modello_test.h5"  # Sostituisci con il percorso reale del modello
+        class_names = ["aqualy", "calcolatrice_casio", "bicchiere", "iphone13",
+                       "mouse_wireless", "pennarello_giotto", "persona", "webcam_box"]
+        api_url = ""  # Inserisci qui l'URL della tua API per testare l'invio, oppure lascia vuoto
+
+        # Carica il modello
+        model = load_custom_model(model_path)
+
+        # Esegui il workflow completo
+        result = webcam_predict_and_send(
+            model,
+            camera_index=camera_index,
+            class_names=class_names,
+            api_url=api_url
+        )
+        print(f"Risultato test workflow: {result}")
     except Exception as e:
         print(f"Errore durante il test: {e}")
