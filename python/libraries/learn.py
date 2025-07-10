@@ -110,100 +110,55 @@ def load_custom_model(model_path: str = "mobilenet_NOME_v1.keras"):
     Load a custom trained model from local file or URL with automatic .keras to .h5 conversion.
 
     Parameters:
-    model_path (str): Local filename or URL to the model file.
-                     Examples:
-                     - "my_model.keras" (local file)
-                     - "https://github.com/user/repo/raw/main/model.keras" (URL)
+    model_path (str or keras.Model): Local filename, URL to the model file, or already loaded model.
 
     Returns:
     model: The loaded Keras model.
-
-    Note: .keras files are automatically converted to .h5 format for better Mind+ compatibility.
     """
     if not HAS_KERAS:
         raise ImportError(
             "Keras non è installato. Installare con: pip install keras")
 
+    # Se è già un modello caricato, restituiscilo subito
+    if hasattr(model_path, "predict") and hasattr(model_path, "save"):
+        print("✅ Modello già caricato, nessun caricamento necessario.")
+        return model_path
+
     # Check if it's a URL
-    if model_path.startswith(('http://', 'https://')):
+    if isinstance(model_path, str) and model_path.startswith(('http://', 'https://')):
         final_model_path = _download_model_from_url(model_path)
     else:
         # Local file - compose path
-        final_model_path = _get_local_model_path(model_path)
+        final_model_path = _get_local_model_path(
+            model_path) if isinstance(model_path, str) else model_path
 
     # Check if model exists
     if not os.path.exists(final_model_path):
         raise FileNotFoundError(f"Modello non trovato: {final_model_path}")
 
     # Automatic .keras to .h5 conversion for better compatibility
-    if final_model_path.endswith('.keras'):
-        h5_path = _auto_convert_keras_to_h5(final_model_path)
-        if h5_path:
-            final_model_path = h5_path
-            print(
-                f"🔄 Modello automaticamente convertito da .keras a .h5 per compatibilità")
+    if isinstance(final_model_path, str) and final_model_path.endswith('.keras'):
+        h5_path = final_model_path.replace('.keras', '_auto_converted.h5')
+        # Converti solo se il .h5 non esiste o è più vecchio del .keras
+        if not os.path.exists(h5_path) or os.path.getmtime(h5_path) < os.path.getmtime(final_model_path):
+            h5_path = _auto_convert_keras_to_h5(final_model_path)
+        final_model_path = h5_path if h5_path else final_model_path
+        print(
+            f"🔄 Modello .keras convertito o già presente come .h5: {final_model_path}")
 
     # Load the model with enhanced error handling
     try:
-        # Try loading with compile=False to avoid signature issues
         model = load_model(final_model_path, compile=False)
         print(f"✅ Modello caricato (compile=False): {final_model_path}")
         return model
     except Exception as e:
         print(f"⚠️ Errore caricamento con compile=False: {e}")
-
-        # Try alternative loading methods
         try:
-            # Try with standard loading
             model = load_model(final_model_path)
             print(f"✅ Modello caricato (standard): {final_model_path}")
             return model
         except Exception as e2:
             print(f"⚠️ Errore caricamento standard: {e2}")
-
-            # Try loading saved_model format if it's a directory
-            if os.path.isdir(final_model_path):
-                try:
-                    import tensorflow as tf
-                    model = tf.keras.models.load_model(final_model_path)
-                    print(
-                        f"✅ Modello caricato (SavedModel): {final_model_path}")
-                    return model
-                except Exception as e3:
-                    print(f"⚠️ Errore SavedModel: {e3}")
-
-            # If .keras conversion failed, try manual conversion as last resort
-            if model_path.endswith('.keras') and final_model_path.endswith('.keras'):
-                print("🔄 Tentativo conversione manuale .keras → .h5...")
-                try:
-                    converted_path = convert_model_format(
-                        final_model_path, target_format="h5")
-                    model = load_model(converted_path, compile=False)
-                    print(
-                        f"✅ Modello caricato dopo conversione manuale: {converted_path}")
-                    return model
-                except Exception as e4:
-                    print(f"⚠️ Errore conversione manuale: {e4}")
-
-            # If all methods fail, provide detailed error information
-            error_msg = f"""
-❌ Errore caricamento modello: {final_model_path}
-
-Errori rilevati:
-1. compile=False: {str(e)}
-2. Standard: {str(e2)}
-
-Possibili soluzioni:
-- Verificare che il file sia un modello Keras valido
-- Controllare la compatibilità TensorFlow/Keras version
-- Usare un modello in formato .h5 o SavedModel
-- Ricreare il modello con la versione corrente di TensorFlow
-
-Versioni in uso:
-- TensorFlow: {_get_tf_version()}
-- Formato file: {_detect_model_format(final_model_path)}
-"""
-            print(error_msg)
             raise RuntimeError(
                 f"Impossibile caricare il modello: {final_model_path}. Vedere dettagli sopra.")
 
@@ -833,25 +788,30 @@ def webcam_predict_and_send(model, camera_index: int = 0, class_names: list = No
 
 
 if __name__ == "__main__":
-    # Test completo: cattura da webcam, predizione e invio a API (se URL fornito)
+    # Test: cattura immagine da webcam, predizione da file esistente, invio dati a API
     try:
         # Parametri di test
         camera_index = 0
-        model_path = "modello_test.h5"  # Sostituisci con il percorso reale del modello
+        model_path = "https://github.com/MASTSummerSchool/MAST-AI/raw/refs/heads/main/models/mobilenet_ft.h5"
         class_names = ["aqualy", "calcolatrice_casio", "bicchiere", "iphone13",
                        "mouse_wireless", "pennarello_giotto", "persona", "webcam_box"]
-        api_url = ""  # Inserisci qui l'URL della tua API per testare l'invio, oppure lascia vuoto
+        api_url = "https://petoiupload.vercel.app/api/predict"
 
         # Carica il modello
         model = load_custom_model(model_path)
 
-        # Esegui il workflow completo
-        result = webcam_predict_and_send(
-            model,
-            camera_index=camera_index,
-            class_names=class_names,
-            api_url=api_url
-        )
-        print(f"Risultato test workflow: {result}")
+        # 1. Cattura immagine da webcam
+        image_path = capture_webcam_image(camera_index)
+
+        # 2. Predizione label e confidenza da file esistente
+        label = predict_label_from_image(model, image_path, class_names)
+        confidence = predict_confidence_from_image(
+            model, image_path, class_names)
+
+        # 3. Invio dati alle API dedicate
+        api_response = send_prediction_data(
+            image_path, label, confidence, api_url)
+        print(f"Risposta API: {api_response}")
+
     except Exception as e:
         print(f"Errore durante il test: {e}")
