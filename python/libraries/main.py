@@ -5,6 +5,8 @@
 from learn import webcam_predict_confidence
 from learn import capture_webcam_image
 from learn import webcam_predict_label
+from learn import predict_label_from_image
+from learn import predict_confidence_from_image
 from learn import send_prediction_data
 from learn import load_custom_model
 
@@ -22,12 +24,12 @@ model = load_custom_model(model_path)
 # URLs: https://github.com/user/repo/raw/main/model.keras
 # Downloaded models cached in: ~/models/cache/
 classes = ["aqualy","calcolatrice_casio","bicchiere","iphone13","mouse_wireless","pennarello_giotto","persona","webcam_box"]
-label = webcam_predict_label(model, camera_id, classes)
-# Capture + predict: returns only label (string)
+label = predict_label_from_image(model, image, classes)
+# Predict on existing image: returns only label (string)
 # Use pre-loaded model object for efficiency
 # Use Mind+ list blocks to create class_names list
-confidence = webcam_predict_confidence(model, camera_id, classes)
-# Capture + predict: returns only confidence (float 0.0-1.0)
+confidence = predict_confidence_from_image(model, image, classes)
+# Predict on existing image: returns only confidence (float 0.0-1.0)
 # Use pre-loaded model object for efficiency
 # Use Mind+ list blocks to create class_names list
 send_api_url = "https://api.example.com/predict"
