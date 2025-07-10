@@ -62,7 +62,7 @@ def compose_path(filename: str, file_ext: str = '.jpg') -> str:
         os.makedirs(data_dir)
 
     file_dir = data_dir + sep + filename + file_ext
-    return file_dir
+    return str(file_dir)
 
 
 def capture_webcam_image(camera_index: int = 0) -> str:
@@ -802,6 +802,7 @@ if __name__ == "__main__":
 
         # 1. Cattura immagine da webcam
         image_path = capture_webcam_image(camera_index)
+        print(type(image_path), image_path)
 
         # 2. Predizione label e confidenza da file esistente
         label = predict_label_from_image(model, image_path, class_names)
