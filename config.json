@@ -16,7 +16,7 @@
     "web",
     "linux"
   ],
-  "version": "2.3.0",
+  "version": "2.3.2",
   "asset": {
     "python": {
       "dir": "python/",
@@ -31,7 +31,7 @@
         "six": "1.15.0",
         "protobuf": "3.19.0",
         "typing-extensions": "3.7.4",
-        "Pillow": "11.3.0"
+        "Pillow": "9.0.0"
       }
     }
   }
