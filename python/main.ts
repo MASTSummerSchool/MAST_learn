@@ -93,4 +93,28 @@ namespace robot {
         Generator.addCode(`convert_model_format(${input_path}, target_format=${target_format})`);
     }
 
+    //% block="Webcam predict label: model [MODEL] camera [CAMERA_INDEX] classes [CLASS_NAMES]" blockType="reporter"
+    //% MODEL.shadow="normal" MODEL.defl="'custom_model'"
+    //% CAMERA_INDEX.shadow="math_number" CAMERA_INDEX.defl="0"
+    //% CLASS_NAMES.shadow="normal" CLASS_NAMES.defl="'class_list'"
+    export function webcam_predict_label(parameter: any, block: any) {
+        let model = parameter.MODEL.code;
+        let camera_index = parameter.CAMERA_INDEX.code;
+        let class_names = parameter.CLASS_NAMES.code;
+        Generator.addImport(`from learn import webcam_predict_label`);
+        Generator.addCode(`webcam_predict_label(${model}, ${camera_index}, ${class_names})`);
+    }
+
+    //% block="Webcam predict confidence: model [MODEL] camera [CAMERA_INDEX] classes [CLASS_NAMES]" blockType="reporter"
+    //% MODEL.shadow="normal" MODEL.defl="'custom_model'"
+    //% CAMERA_INDEX.shadow="math_number" CAMERA_INDEX.defl="0"
+    //% CLASS_NAMES.shadow="normal" CLASS_NAMES.defl="'class_list'"
+    export function webcam_predict_confidence(parameter: any, block: any) {
+        let model = parameter.MODEL.code;
+        let camera_index = parameter.CAMERA_INDEX.code;
+        let class_names = parameter.CLASS_NAMES.code;
+        Generator.addImport(`from learn import webcam_predict_confidence`);
+        Generator.addCode(`webcam_predict_confidence(${model}, ${camera_index}, ${class_names})`);
+    }
+
 }

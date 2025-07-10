@@ -16,7 +16,7 @@
     "web",
     "linux"
   ],
-  "version": "2.3.3",
+  "version": "2.3.4",
   "asset": {
     "python": {
       "dir": "python/",
