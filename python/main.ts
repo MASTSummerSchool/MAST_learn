@@ -63,11 +63,45 @@ namespace robot {
         Generator.addCode(`# Use Mind+ list blocks to create class_names list`);
     }
 
+    //% block="Get label from existing image [IMAGE_PATH] with model [MODEL] using classes [CLASS_NAMES]" blockType="reporter"
+    //% IMAGE_PATH.shadow="string" IMAGE_PATH.defl="'captured_image.jpg'"
+    //% MODEL.shadow="normal" MODEL.defl="'custom_model'"
+    //% CLASS_NAMES.shadow="normal" CLASS_NAMES.defl="'class_list'"
+    export function predict_label_from_image(parameter: any, block: any) {
+        let image_path = parameter.IMAGE_PATH.code;
+        let model = parameter.MODEL.code;
+        let class_names = parameter.CLASS_NAMES.code;
+        Generator.addImport(`from learn import predict_label_from_image`);
+        Generator.addCode(`predict_label_from_image(${image_path}, ${model}, ${class_names})`);
+        
+        // Add comments
+        Generator.addCode(`# Predict on existing image: returns only label (string)`);
+        Generator.addCode(`# Perfect for analyzing the same image multiple times`);
+        Generator.addCode(`# Use with captured image path for consistent results`);
+    }
+
+    //% block="Get confidence from existing image [IMAGE_PATH] with model [MODEL] using classes [CLASS_NAMES]" blockType="reporter"
+    //% IMAGE_PATH.shadow="string" IMAGE_PATH.defl="'captured_image.jpg'"
+    //% MODEL.shadow="normal" MODEL.defl="'custom_model'"
+    //% CLASS_NAMES.shadow="normal" CLASS_NAMES.defl="'class_list'"
+    export function predict_confidence_from_image(parameter: any, block: any) {
+        let image_path = parameter.IMAGE_PATH.code;
+        let model = parameter.MODEL.code;
+        let class_names = parameter.CLASS_NAMES.code;
+        Generator.addImport(`from learn import predict_confidence_from_image`);
+        Generator.addCode(`predict_confidence_from_image(${image_path}, ${model}, ${class_names})`);
+        
+        // Add comments
+        Generator.addCode(`# Predict on existing image: returns only confidence (float 0.0-1.0)`);
+        Generator.addCode(`# Perfect for analyzing the same image multiple times`);
+        Generator.addCode(`# Use with captured image path for consistent results`);
+    }
+
     //% block="Send prediction data: image [IMAGE_PATH] label [LABEL] confidence [CONFIDENCE] to API [API_URL]" blockType="reporter"
     //% IMAGE_PATH.shadow="string" IMAGE_PATH.defl="'image.jpg'"
     //% LABEL.shadow="string" LABEL.defl="'predicted_label'"
     //% CONFIDENCE.shadow="math_number" CONFIDENCE.defl="0.95"
-    //% API_URL.shadow="string" API_URL.defl="'https://api.example.com/predictions'"
+    //% API_URL.shadow="string" API_URL.defl="https://petoiupload.vercel.app/api/predict"
     export function send_prediction_data(parameter: any, block: any) {
         let image_path = parameter.IMAGE_PATH.code;
         let label = parameter.LABEL.code;
@@ -86,7 +120,7 @@ namespace robot {
     //% MODEL.shadow="normal" MODEL.defl="'custom_model'"
     //% CAMERA_INDEX.shadow="math_number" CAMERA_INDEX.defl="0"
     //% CLASS_NAMES.shadow="normal" CLASS_NAMES.defl="'class_list'"
-    //% API_URL.shadow="string" API_URL.defl="'https://api.example.com/predictions'"
+    //% API_URL.shadow="string" API_URL.defl="https://petoiupload.vercel.app/api/predict"
     export function webcam_predict_and_send(parameter: any, block: any) {
         let model = parameter.MODEL.code;
         let camera_index = parameter.CAMERA_INDEX.code;

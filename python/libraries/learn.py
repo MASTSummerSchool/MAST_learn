@@ -686,67 +686,14 @@ def predict_confidence_from_image(model, image_path: str, class_names: list = No
     return confidence_score
 
 
-def webcam_predict_label_legacy(model_name: str = "mobilenet_NOME_v1.keras", camera_index: int = 0, class_names: list = None) -> str:
-    """
-    Legacy function: Capture image from webcam and get only the predicted label.
+# --- RIMOSSE FUNZIONI LEGACY ---
 
-    DEPRECATED: Use webcam_predict_label(model, camera_index, class_names) instead.
-    This function loads the model each time, which is inefficient.
+# Elimina queste funzioni legacy:
+# - webcam_predict_label_legacy
+# - webcam_predict_confidence_legacy
+# - webcam_predict
 
-    Parameters:
-    model_name (str): Name of the model file.
-    camera_index (int): Index of the camera to use.
-    class_names (list): List of class names. If None, uses default classes.
-
-    Returns:
-    str: The predicted label.
-    """
-    predicted_class, _ = webcam_predict(model_name, camera_index, class_names)
-    return predicted_class
-
-
-def webcam_predict_confidence_legacy(model_name: str = "mobilenet_NOME_v1.keras", camera_index: int = 0, class_names: list = None) -> float:
-    """
-    Legacy function: Capture image from webcam and get only the confidence score.
-
-    DEPRECATED: Use webcam_predict_confidence(model, camera_index, class_names) instead.
-    This function loads the model each time, which is inefficient.
-
-    Parameters:
-    model_name (str): Name of the model file.
-    camera_index (int): Index of the camera to use.
-    class_names (list): List of class names. If None, uses default classes.
-
-    Returns:
-    float: The confidence score.
-    """
-    _, confidence_score = webcam_predict(model_name, camera_index, class_names)
-    return confidence_score
-
-
-def webcam_predict(model_name: str = "mobilenet_NOME_v1.keras", camera_index: int = 0, class_names: list = None):
-    """
-    Capture image from webcam and predict using custom model.
-
-    Parameters:
-    model_name (str): Name of the model file.
-    camera_index (int): Index of the camera to use.
-    class_names (list): List of class names. If None, uses default classes.
-
-    Returns:
-    tuple: (predicted_class, confidence_score)
-    """
-    # Capture image from webcam
-    image_path = capture_webcam_image(camera_index)
-
-    # Load model
-    model = load_custom_model(model_name)
-
-    # Make prediction
-    predicted_class, confidence_score = predict_image_custom(
-        model, image_path, class_names)
-
-    return predicted_class, confidence_score
+# --- FINE RIMOZIONE ---
 
 
 def send_prediction_data(image_path: str, label: str, confidence: float, api_url: str, additional_data: dict = None) -> dict:
@@ -783,7 +730,7 @@ def send_prediction_data(image_path: str, label: str, confidence: float, api_url
         # Stampa la struttura del JSON che verrà inviato (senza stampare l'immagine base64)
         payload_preview = payload.copy()
         if "image" in payload_preview:
-            payload_preview["image"] = payload_preview["image"]  # mostra il base64 reale
+            payload_preview["image"] = f"<base64 string, length={len(payload['image'])}>"
         print("Struttura JSON inviata all'API:")
         print(json.dumps(payload_preview, indent=2))
 
